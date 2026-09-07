@@ -198,4 +198,1975 @@
     }
 
     .progress {
-      margin-top: 
+      margin-top: 10px;
+      height: 10px;
+      background: #e6e6e6;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress > div {
+      height: 100%;
+      width: 0;
+      background: #111;
+      transition: width .2s ease;
+    }
+
+    .sets {
+      display: grid;
+      gap: 9px;
+      margin-top: 14px;
+    }
+
+    .setrow {
+      display: grid;
+      grid-template-columns: 58px 1fr 1fr 50px;
+      gap: 7px;
+      align-items: end;
+    }
+
+    .setrow.time {
+      grid-template-columns: 58px 1fr 50px;
+    }
+
+    .setlabel {
+      color: var(--muted);
+      font-size: 12px;
+      align-self: center;
+    }
+
+    label.small {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    input[type="number"],
+    textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: #111;
+      border-radius: 12px;
+      padding: 10px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    input[type="number"]:focus,
+    textarea:focus {
+      border-color: #888;
+    }
+
+    input[type="checkbox"] {
+      width: 24px;
+      height: 24px;
+    }
+
+    .donebox {
+      height: 45px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fafafa;
+    }
+
+    .mobrow {
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .feelings {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+      margin-top: 10px;
+    }
+
+    .feelings button {
+      font-size: 22px;
+    }
+
+    textarea {
+      margin-top: 10px;
+      resize: vertical;
+    }
+
+    .sharegrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .history-item {
+      padding: 14px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .history-item:first-child {
+      border-top: none;
+    }
+
+    .history-actions {
+      margin-top: 8px;
+    }
+
+    .mini {
+      min-height: 36px;
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+
+    .empty {
+      padding: 20px 0 5px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .footer {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding:
+        10px
+        14px
+        calc(10px + env(safe-area-inset-bottom));
+      background: rgba(245,245,247,.96);
+      border-top: 1px solid var(--border);
+      backdrop-filter: blur(14px);
+    }
+
+    .footer-inner {
+      max-width: 760px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 8px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 520px) {
+      .tabs button {
+        padding: 9px 3px;
+        font-size: 12px;
+      }
+
+      .metric {
+        padding: 10px;
+      }
+
+      .metric strong {
+        font-size: 21px;
+      }
+
+      .sharegrid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <header>
+    <div>
+      <h1>SLRP Training</h1>
+      <div class="sub" id="todayText"></div>
+    </div>
+
+    <div class="badge" id="saveStatus">
+      Datos guardados ✓
+    </div>
+  </header>
+
+  <section class="summary">
+    <div class="metric">
+      <span class="sub">Semana</span>
+      <strong id="weekCount">0</strong>
+      <span class="sub">sesiones</span>
+    </div>
+
+    <div class="metric">
+      <span class="sub">Mes</span>
+      <strong id="monthCount">0</strong>
+      <span class="sub">sesiones</span>
+    </div>
+
+    <div class="metric">
+      <span class="sub">Racha</span>
+      <strong id="streak">0</strong>
+      <span class="sub">días</span>
+    </div>
+  </section>
+
+  <nav class="tabs">
+    <button data-tab="gym" class="active">Gym</button>
+    <button data-tab="mob">Movilidad</button>
+    <button data-tab="history">Historial</button>
+    <button data-tab="share">Compartir</button>
+  </nav>
+
+  <!-- GYM -->
+
+  <section id="gym" class="panel active">
+
+    <div class="days">
+      <button class="day active" data-day="1">Día 1</button>
+      <button class="day" data-day="2">Día 2</button>
+      <button class="day" data-day="3">Día 3</button>
+    </div>
+
+    <div class="card">
+
+      <div class="row between">
+        <strong>Progreso</strong>
+        <span id="gymProgressText">0%</span>
+      </div>
+
+      <div class="progress">
+        <div id="gymProgress"></div>
+      </div>
+
+    </div>
+
+    <div id="gymExercises"></div>
+
+    <div class="card">
+
+      <div class="exercise-title">Aeróbico</div>
+
+      <div class="presc">
+        15–20 minutos · caminata, bicicleta, elíptico u otra opción
+      </div>
+
+      <label class="mobrow" style="margin-top:12px;">
+        <input type="checkbox" id="aerobic">
+        <span>Completado</span>
+      </label>
+
+    </div>
+
+    <div class="card">
+
+      <strong>¿Cómo te sentiste?</strong>
+
+      <div class="feelings" id="gymFeelings">
+        <button data-feel="😀 Sin molestias">😀</button>
+        <button data-feel="🙂 Molestia leve">🙂</button>
+        <button data-feel="😐 Molestia moderada">😐</button>
+        <button data-feel="🔴 Dolor">🔴</button>
+      </div>
+
+      <textarea
+        id="gymNotes"
+        rows="3"
+        placeholder="Notas opcionales: molestias, técnica, dolor, etc."
+      ></textarea>
+
+    </div>
+
+  </section>
+
+  <!-- MOVILIDAD -->
+
+  <section id="mob" class="panel">
+
+    <div class="card">
+      <strong>Rutina de movilidad</strong>
+      <div class="presc">
+        Ideal todos los días · mínimo 3 veces por semana
+      </div>
+    </div>
+
+    <div id="mobExercises"></div>
+
+    <div class="card">
+
+      <strong>¿Cómo te sentiste?</strong>
+
+      <div class="feelings" id="mobFeelings">
+        <button data-feel="😀 Sin molestias">😀</button>
+        <button data-feel="🙂 Molestia leve">🙂</button>
+        <button data-feel="😐 Molestia moderada">😐</button>
+        <button data-feel="🔴 Dolor">🔴</button>
+      </div>
+
+      <textarea
+        id="mobNotes"
+        rows="3"
+        placeholder="Notas opcionales"
+      ></textarea>
+
+    </div>
+
+  </section>
+
+  <!-- HISTORIAL -->
+
+  <section id="history" class="panel">
+
+    <div class="card">
+
+      <div class="row between">
+
+        <div>
+          <strong>Historial</strong>
+          <div class="sub">
+            Los datos quedan guardados en este iPhone.
+          </div>
+        </div>
+
+        <button id="exportBtn" class="mini">
+          Backup
+        </button>
+
+      </div>
+
+      <div id="historyList"></div>
+
+    </div>
+
+  </section>
+
+  <!-- COMPARTIR -->
+
+  <section id="share" class="panel">
+
+    <div class="card">
+
+      <strong>Compartir por WhatsApp</strong>
+
+      <div class="presc">
+        Elegí qué resumen querés enviar.
+      </div>
+
+      <div class="sharegrid">
+
+        <button id="shareLast" class="primary">
+          Último entrenamiento
+        </button>
+
+        <button id="shareWeek">
+          Semana
+        </button>
+
+        <button id="shareMonth">
+          Mes
+        </button>
+
+        <button id="shareAll">
+          Resumen completo
+        </button>
+
+      </div>
+
+    </div>
+
+    <div class="card">
+
+      <strong>Vista previa</strong>
+
+      <textarea
+        id="sharePreview"
+        rows="15"
+        readonly
+      ></textarea>
+
+    </div>
+
+  </section>
+
+</div>
+
+<div class="footer">
+
+  <div class="footer-inner">
+
+    <button id="saveGym" class="primary">
+      Guardar entrenamiento
+    </button>
+
+    <button id="saveMob" class="primary hidden">
+      Guardar movilidad
+    </button>
+
+    <button id="quickShare">
+      Compartir
+    </button>
+
+  </div>
+
+</div>
+
+<script>
+
+const STORAGE_KEY = "slrp_training_v2";
+
+let state = loadState();
+
+let currentDay = 1;
+
+let gymFeeling = "";
+let mobilityFeeling = "";
+
+/* ==============================
+   RUTINA
+============================== */
+
+const gymRoutine = {
+
+  1: [
+
+    {
+      name: "Remo bajo para dorsales",
+      prescription: "12 reps × 3 series",
+      sets: [12,12,12],
+      weighted: true
+    },
+
+    {
+      name: "Press banco inclinado",
+      prescription: "10 reps × 3 series",
+      note: "Con mancuerna o multipower",
+      sets: [10,10,10],
+      weighted: true
+    },
+
+    {
+      name: "Dorsalera",
+      prescription: "12 reps × 3 series",
+      sets: [12,12,12],
+      weighted: true
+    },
+
+    {
+      name: "Bíceps bilateral sentado",
+      prescription: "12 reps + 10 reps × 2 series",
+      sets: [12,10,10],
+      weighted: true
+    },
+
+    {
+      name: "Plancha frontal",
+      prescription: "30 segundos × 2 series",
+      sets: [30,30],
+      time: true
+    },
+
+    {
+      name: "Pallof",
+      prescription: "20 segundos por lado × 2 series",
+      sets: [20,20],
+      time: true,
+      side: true,
+      video: "https://www.youtube.com/shorts/uadHuIgQoK8"
+    }
+
+  ],
+
+  2: [
+
+    {
+      name: "Sentadillas con mancuerna",
+      prescription: "12 reps + 10 reps × 2 series",
+      note: "Apoyándose en banco",
+      sets: [12,10,10],
+      weighted: true
+    },
+
+    {
+      name: "Abductores",
+      prescription: "12 reps × 3 series",
+      note: "Separar las piernas",
+      sets: [12,12,12],
+      weighted: true
+    },
+
+    {
+      name: "Vuelos laterales",
+      prescription: "10 reps × 3 series",
+      sets: [10,10,10],
+      weighted: true
+    },
+
+    {
+      name: "Press militar sentado",
+      prescription: "12 reps × 3 series",
+      sets: [12,12,12],
+      weighted: true
+    },
+
+    {
+      name: "Plancha frontal",
+      prescription: "30 segundos × 2 series",
+      sets: [30,30],
+      time: true
+    },
+
+    {
+      name: "Plancha lateral corta",
+      prescription: "20 segundos por lado × 2 series",
+      sets: [20,20],
+      time: true,
+      side: true
+    }
+
+  ],
+
+  3: [
+
+    {
+      name: "Peso muerto con mancuerna",
+      prescription: "8 reps × 4 series",
+      note: "POCO PESO · muy técnico",
+      sets: [8,8,8,8],
+      weighted: true,
+      important: true,
+      video: "https://www.youtube.com/watch?v=x7W2BOKWWKs"
+    },
+
+    {
+      name: "Remo bajo",
+      prescription: "10 reps × 3 series",
+      note: "Más peso que Día 1",
+      sets: [10,10,10],
+      weighted: true
+    },
+
+    {
+      name: "Puente glúteo",
+      prescription: "10 reps × 3 series",
+      note: "Peso moderado. Hacerlo lento y con buena técnica.",
+      sets: [10,10,10],
+      weighted: true
+    },
+
+    {
+      name: "Bird-dog",
+      prescription: "8 repeticiones por lado × 2 series",
+      sets: [8,8],
+      side: true,
+      video: "https://www.youtube.com/shorts/Tjo5oYHoS8M"
+    },
+
+    {
+      name: "Plancha frontal",
+      prescription: "30 segundos × 2 series",
+      sets: [30,30],
+      time: true
+    },
+
+    {
+      name: "Pallof",
+      prescription: "20 segundos por lado × 2 series",
+      sets: [20,20],
+      time: true,
+      side: true
+    }
+
+  ]
+
+};
+
+const mobilityRoutine = [
+
+  {
+    name: "Movilidad de columna lumbar",
+    prescription: "12 movimientos por lado"
+  },
+
+  {
+    name: "Movilidad cadera – columna",
+    prescription: "10 movimientos por lado × 2 series"
+  },
+
+  {
+    name: "Activación del transverso del abdomen",
+    prescription: "12 repeticiones × 2 series",
+    note:
+      "Acostado boca arriba, empujar con la zona baja de la espalda contra el piso al sacar el aire. El ombligo desciende hacia el suelo."
+  },
+
+  {
+    name: "Gato bueno / gato malo",
+    prescription: "10 repeticiones × 2 series"
+  },
+
+  {
+    name: "Movilidad torácica",
+    prescription: "10 veces por lado",
+    note:
+      "A cuatro patas: deslizar un brazo por el suelo mientras bajás el hombro. Luego levantar el mismo brazo hacia el techo mirando la mano."
+  }
+
+];
+
+/* ==============================
+   STORAGE
+============================== */
+
+function loadState() {
+
+  try {
+
+    const saved = localStorage.getItem(STORAGE_KEY);
+
+    if (saved) {
+      return JSON.parse(saved);
+    }
+
+  } catch (e) {}
+
+  return {
+    sessions: [],
+    lastWeights: {}
+  };
+
+}
+
+function saveState() {
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(state)
+  );
+
+  const el = document.getElementById("saveStatus");
+
+  el.textContent = "Guardado ✓";
+
+}
+
+/* ==============================
+   FECHA
+============================== */
+
+document.getElementById("todayText").textContent =
+  new Intl.DateTimeFormat(
+    "es-AR",
+    {
+      weekday: "long",
+      day: "numeric",
+      month: "long"
+    }
+  ).format(new Date());
+
+/* ==============================
+   TABS
+============================== */
+
+document
+  .querySelectorAll("[data-tab]")
+  .forEach(button => {
+
+    button.addEventListener("click", () => {
+
+      const tab = button.dataset.tab;
+
+      document
+        .querySelectorAll("[data-tab]")
+        .forEach(b => b.classList.toggle("active", b === button));
+
+      document
+        .querySelectorAll(".panel")
+        .forEach(panel =>
+          panel.classList.toggle("active", panel.id === tab)
+        );
+
+      document
+        .getElementById("saveGym")
+        .classList.toggle("hidden", tab !== "gym");
+
+      document
+        .getElementById("saveMob")
+        .classList.toggle("hidden", tab !== "mob");
+
+    });
+
+  });
+
+/* ==============================
+   GYM
+============================== */
+
+function lastWeight(exercise, set) {
+
+  if (!state.lastWeights[exercise]) {
+    return "";
+  }
+
+  return state.lastWeights[exercise][set] || "";
+
+}
+
+function renderGym() {
+
+  const container =
+    document.getElementById("gymExercises");
+
+  container.innerHTML =
+    gymRoutine[currentDay]
+      .map((exercise, index) => {
+
+        const sets =
+          exercise.sets
+            .map((target, setIndex) => {
+
+              if (exercise.weighted) {
+
+                return `
+
+                  <div class="setrow">
+
+                    <div class="setlabel">
+                      Serie ${setIndex + 1}
+                    </div>
+
+                    <label class="small">
+                      Peso kg
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.5"
+                        inputmode="decimal"
+                        data-weight="${setIndex}"
+                        value="${lastWeight(exercise.name,setIndex)}"
+                        placeholder="—"
+                      >
+                    </label>
+
+                    <label class="small">
+                      Reps
+                      <input
+                        type="number"
+                        min="0"
+                        inputmode="numeric"
+                        data-value="${setIndex}"
+                        value="${target}"
+                      >
+                    </label>
+
+                    <label class="donebox">
+                      <input
+                        type="checkbox"
+                        data-done="${setIndex}"
+                      >
+                    </label>
+
+                  </div>
+
+                `;
+
+              }
+
+              return `
+
+                <div class="setrow time">
+
+                  <div class="setlabel">
+                    Serie ${setIndex + 1}
+                  </div>
+
+                  <label class="small">
+
+                    ${exercise.time ? "Segundos" : "Reps"}
+
+                    <input
+                      type="number"
+                      min="0"
+                      inputmode="numeric"
+                      data-value="${setIndex}"
+                      value="${target}"
+                    >
+
+                  </label>
+
+                  <label class="donebox">
+
+                    <input
+                      type="checkbox"
+                      data-done="${setIndex}"
+                    >
+
+                  </label>
+
+                </div>
+
+              `;
+
+            })
+            .join("");
+
+        return `
+
+          <article
+            class="card ${exercise.important ? "important" : ""}"
+            data-exercise="${index}"
+          >
+
+            <div class="row between">
+
+              <div class="grow">
+
+                <div class="exercise-title">
+                  ${index + 1}. ${exercise.name}
+                </div>
+
+                <div class="presc">
+                  ${exercise.prescription}
+                </div>
+
+                ${
+                  exercise.note
+                  ? `<div class="note">${exercise.note}</div>`
+                  : ""
+                }
+
+              </div>
+
+              ${
+                exercise.video
+                ? `
+                  <a
+                    class="btn mini"
+                    href="${exercise.video}"
+                    target="_blank"
+                  >
+                    Video ↗
+                  </a>
+                `
+                : ""
+              }
+
+            </div>
+
+            <div class="sets">
+              ${sets}
+            </div>
+
+          </article>
+
+        `;
+
+      })
+      .join("");
+
+  document
+    .querySelectorAll("#gymExercises input")
+    .forEach(input =>
+      input.addEventListener(
+        "change",
+        updateProgress
+      )
+    );
+
+  updateProgress();
+
+}
+
+/* ==============================
+   PROGRESO
+============================== */
+
+function updateProgress() {
+
+  const boxes =
+    [
+      ...document.querySelectorAll(
+        "#gymExercises [data-done]"
+      )
+    ];
+
+  const completed =
+    boxes.filter(box => box.checked).length;
+
+  const percent =
+    boxes.length
+      ? Math.round(
+          completed / boxes.length * 100
+        )
+      : 0;
+
+  document
+    .getElementById("gymProgress")
+    .style.width = percent + "%";
+
+  document
+    .getElementById("gymProgressText")
+    .textContent = percent + "%";
+
+}
+
+/* ==============================
+   CAMBIO DE DÍA
+============================== */
+
+document
+  .querySelectorAll(".day")
+  .forEach(button => {
+
+    button.addEventListener("click", () => {
+
+      currentDay =
+        Number(button.dataset.day);
+
+      document
+        .querySelectorAll(".day")
+        .forEach(b =>
+          b.classList.toggle(
+            "active",
+            b === button
+          )
+        );
+
+      renderGym();
+
+    });
+
+  });
+
+/* ==============================
+   MOVILIDAD
+============================== */
+
+function renderMobility() {
+
+  document
+    .getElementById("mobExercises")
+    .innerHTML =
+      mobilityRoutine
+        .map((exercise, index) => `
+
+          <label class="card mobrow">
+
+            <input
+              type="checkbox"
+              data-mob="${index}"
+            >
+
+            <span>
+
+              <span class="exercise-title">
+                ${index + 1}. ${exercise.name}
+              </span>
+
+              <span
+                class="presc"
+                style="display:block;"
+              >
+                ${exercise.prescription}
+              </span>
+
+              ${
+                exercise.note
+                  ? `
+                    <span
+                      class="note"
+                      style="display:block;"
+                    >
+                      ${exercise.note}
+                    </span>
+                  `
+                  : ""
+              }
+
+            </span>
+
+          </label>
+
+        `)
+        .join("");
+
+}
+
+/* ==============================
+   SENSACIONES
+============================== */
+
+document
+  .querySelectorAll("#gymFeelings button")
+  .forEach(button => {
+
+    button.addEventListener("click", () => {
+
+      gymFeeling =
+        button.dataset.feel;
+
+      document
+        .querySelectorAll("#gymFeelings button")
+        .forEach(b =>
+          b.classList.toggle(
+            "active",
+            b === button
+          )
+        );
+
+    });
+
+  });
+
+document
+  .querySelectorAll("#mobFeelings button")
+  .forEach(button => {
+
+    button.addEventListener("click", () => {
+
+      mobilityFeeling =
+        button.dataset.feel;
+
+      document
+        .querySelectorAll("#mobFeelings button")
+        .forEach(b =>
+          b.classList.toggle(
+            "active",
+            b === button
+          )
+        );
+
+    });
+
+  });
+
+/* ==============================
+   GUARDAR GYM
+============================== */
+
+function saveGym() {
+
+  const exercises = [];
+
+  document
+    .querySelectorAll(
+      "#gymExercises [data-exercise]"
+    )
+    .forEach((card, exerciseIndex) => {
+
+      const exercise =
+        gymRoutine[currentDay][exerciseIndex];
+
+      const sets = [];
+
+      card
+        .querySelectorAll(".setrow")
+        .forEach((row, setIndex) => {
+
+          const weightInput =
+            row.querySelector("[data-weight]");
+
+          const valueInput =
+            row.querySelector("[data-value]");
+
+          const doneInput =
+            row.querySelector("[data-done]");
+
+          const weight =
+            weightInput
+              ? weightInput.value
+              : "";
+
+          const value =
+            valueInput.value;
+
+          const done =
+            doneInput.checked;
+
+          if (
+            exercise.weighted &&
+            weight !== ""
+          ) {
+
+            if (
+              !state.lastWeights[
+                exercise.name
+              ]
+            ) {
+
+              state.lastWeights[
+                exercise.name
+              ] = {};
+
+            }
+
+            state.lastWeights[
+              exercise.name
+            ][setIndex] = weight;
+
+          }
+
+          sets.push({
+            weight,
+            value,
+            done
+          });
+
+        });
+
+      exercises.push({
+        name: exercise.name,
+        sets
+      });
+
+    });
+
+  const session = {
+
+    id: Date.now(),
+
+    date: new Date().toISOString(),
+
+    type: "Gym",
+
+    day: currentDay,
+
+    feeling: gymFeeling,
+
+    notes:
+      document
+        .getElementById("gymNotes")
+        .value,
+
+    aerobic:
+      document
+        .getElementById("aerobic")
+        .checked,
+
+    exercises
+
+  };
+
+  state.sessions.push(session);
+
+  saveState();
+
+  renderStats();
+
+  renderHistory();
+
+  alert("Entrenamiento guardado ✓");
+
+}
+
+/* ==============================
+   GUARDAR MOVILIDAD
+============================== */
+
+function saveMobility() {
+
+  const exercises =
+    [
+      ...document.querySelectorAll(
+        "[data-mob]"
+      )
+    ]
+    .map((checkbox, index) => ({
+
+      name:
+        mobilityRoutine[index].name,
+
+      done:
+        checkbox.checked
+
+    }));
+
+  state.sessions.push({
+
+    id: Date.now(),
+
+    date: new Date().toISOString(),
+
+    type: "Movilidad",
+
+    feeling: mobilityFeeling,
+
+    notes:
+      document
+        .getElementById("mobNotes")
+        .value,
+
+    exercises
+
+  });
+
+  saveState();
+
+  renderStats();
+
+  renderHistory();
+
+  alert("Movilidad guardada ✓");
+
+}
+
+document
+  .getElementById("saveGym")
+  .addEventListener(
+    "click",
+    saveGym
+  );
+
+document
+  .getElementById("saveMob")
+  .addEventListener(
+    "click",
+    saveMobility
+  );
+
+/* ==============================
+   ESTADÍSTICAS
+============================== */
+
+function startOfWeek(date) {
+
+  const result =
+    new Date(date);
+
+  const day =
+    (result.getDay() + 6) % 7;
+
+  result.setHours(0,0,0,0);
+
+  result.setDate(
+    result.getDate() - day
+  );
+
+  return result;
+
+}
+
+function sameMonth(a,b) {
+
+  return (
+    a.getFullYear() ===
+      b.getFullYear()
+    &&
+    a.getMonth() ===
+      b.getMonth()
+  );
+
+}
+
+function renderStats() {
+
+  const now =
+    new Date();
+
+  const weekStart =
+    startOfWeek(now);
+
+  const weekSessions =
+    state.sessions.filter(
+      session =>
+        new Date(session.date) >=
+          weekStart
+    );
+
+  const monthSessions =
+    state.sessions.filter(
+      session =>
+        sameMonth(
+          new Date(session.date),
+          now
+        )
+    );
+
+  document
+    .getElementById("weekCount")
+    .textContent =
+      weekSessions.length;
+
+  document
+    .getElementById("monthCount")
+    .textContent =
+      monthSessions.length;
+
+  calculateStreak();
+
+}
+
+function calculateStreak() {
+
+  const dates =
+    [
+      ...new Set(
+        state.sessions.map(
+          session =>
+            session.date.slice(0,10)
+        )
+      )
+    ];
+
+  let streak = 0;
+
+  let cursor =
+    new Date();
+
+  cursor.setHours(0,0,0,0);
+
+  for (
+    let i = 0;
+    i < 365;
+    i++
+  ) {
+
+    const key =
+      cursor
+        .toISOString()
+        .slice(0,10);
+
+    if (
+      dates.includes(key)
+    ) {
+
+      streak++;
+
+    } else if (
+      i > 0
+    ) {
+
+      break;
+
+    }
+
+    cursor.setDate(
+      cursor.getDate() - 1
+    );
+
+  }
+
+  document
+    .getElementById("streak")
+    .textContent = streak;
+
+}
+
+/* ==============================
+   RESUMEN SESIÓN
+============================== */
+
+function sessionSummary(session) {
+
+  const date =
+    new Date(session.date)
+      .toLocaleString(
+        "es-AR",
+        {
+          day: "2-digit",
+          month: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit"
+        }
+      );
+
+  const lines = [
+
+    "SLRP Training",
+
+    `${session.type}${
+      session.day
+        ? " · Día " + session.day
+        : ""
+    }`,
+
+    date
+
+  ];
+
+  if (
+    session.type === "Gym"
+  ) {
+
+    let completed = 0;
+    let total = 0;
+
+    session.exercises
+      .forEach(exercise => {
+
+        exercise.sets
+          .forEach(set => {
+
+            total++;
+
+            if (
+              set.done
+            ) {
+              completed++;
+            }
+
+          });
+
+      });
+
+    lines.push(
+      `Series completadas: ${completed}/${total}`
+    );
+
+    lines.push(
+      `Aeróbico: ${
+        session.aerobic
+          ? "Sí"
+          : "No"
+      }`
+    );
+
+    session.exercises
+      .forEach(exercise => {
+
+        const sets =
+          exercise.sets
+            .filter(set => set.done)
+            .map(set => {
+
+              if (
+                set.weight
+              ) {
+
+                return `${set.weight} kg × ${set.value}`;
+
+              }
+
+              return set.value;
+
+            });
+
+        if (
+          sets.length
+        ) {
+
+          lines.push(
+            `${exercise.name}: ${sets.join(" · ")}`
+          );
+
+        }
+
+      });
+
+  } else {
+
+    const completed =
+      session.exercises
+        .filter(
+          exercise =>
+            exercise.done
+        )
+        .length;
+
+    lines.push(
+      `Ejercicios completados: ${completed}/${session.exercises.length}`
+    );
+
+  }
+
+  if (
+    session.feeling
+  ) {
+
+    lines.push(
+      `Sensación: ${session.feeling}`
+    );
+
+  }
+
+  if (
+    session.notes
+  ) {
+
+    lines.push(
+      `Notas: ${session.notes}`
+    );
+
+  }
+
+  return lines.join("\n");
+
+}
+
+/* ==============================
+   RESUMEN SEMANAL / MENSUAL
+============================== */
+
+function periodSummary(type) {
+
+  const now =
+    new Date();
+
+  let sessions = [];
+
+  if (
+    type === "week"
+  ) {
+
+    const weekStart =
+      startOfWeek(now);
+
+    sessions =
+      state.sessions.filter(
+        session =>
+          new Date(session.date) >=
+          weekStart
+      );
+
+  } else {
+
+    sessions =
+      state.sessions.filter(
+        session =>
+          sameMonth(
+            new Date(session.date),
+            now
+          )
+      );
+
+  }
+
+  const gym =
+    sessions.filter(
+      session =>
+        session.type === "Gym"
+    );
+
+  const mobility =
+    sessions.filter(
+      session =>
+        session.type ===
+          "Movilidad"
+    );
+
+  const title =
+    type === "week"
+      ? "Resumen semanal"
+      : "Resumen mensual";
+
+  const lines = [
+
+    `SLRP Training — ${title}`,
+
+    "",
+
+    `Sesiones totales: ${sessions.length}`,
+
+    `Gym: ${gym.length}`,
+
+    `Movilidad: ${mobility.length}`
+
+  ];
+
+  [1,2,3]
+    .forEach(day => {
+
+      const count =
+        gym.filter(
+          session =>
+            session.day === day
+        ).length;
+
+      if (
+        count
+      ) {
+
+        lines.push(
+          `Día ${day}: ${count} sesión${count === 1 ? "" : "es"}`
+        );
+
+      }
+
+    });
+
+  const feelings = {};
+
+  sessions
+    .forEach(session => {
+
+      if (
+        session.feeling
+      ) {
+
+        feelings[
+          session.feeling
+        ] =
+          (
+            feelings[
+              session.feeling
+            ] || 0
+          ) + 1;
+
+      }
+
+    });
+
+  if (
+    Object.keys(feelings).length
+  ) {
+
+    lines.push("");
+
+    lines.push("Sensaciones:");
+
+    Object.entries(feelings)
+      .forEach(
+        ([feeling,count]) =>
+          lines.push(
+            `${feeling}: ${count}`
+          )
+      );
+
+  }
+
+  return lines.join("\n");
+
+}
+
+/* ==============================
+   HISTORIAL
+============================== */
+
+function renderHistory() {
+
+  const container =
+    document.getElementById(
+      "historyList"
+    );
+
+  if (
+    !state.sessions.length
+  ) {
+
+    container.innerHTML =
+      `
+        <div class="empty">
+          Todavía no hay sesiones guardadas.
+        </div>
+      `;
+
+    return;
+
+  }
+
+  container.innerHTML =
+    state.sessions
+      .slice()
+      .reverse()
+      .map(session => `
+
+        <div class="history-item">
+
+          <strong>
+            ${session.type}
+            ${
+              session.day
+                ? " · Día " + session.day
+                : ""
+            }
+          </strong>
+
+          <div class="sub">
+
+            ${
+              new Date(session.date)
+                .toLocaleString("es-AR")
+            }
+
+          </div>
+
+          <div
+            style="
+              white-space:pre-wrap;
+              font-size:14px;
+              margin-top:7px;
+              line-height:1.4;
+            "
+          >
+            ${
+              sessionSummary(session)
+                .split("\n")
+                .slice(3)
+                .join("\n")
+            }
+          </div>
+
+          <div class="history-actions">
+
+            <button
+              class="mini"
+              onclick="shareSession(${session.id})"
+            >
+              WhatsApp
+            </button>
+
+            <button
+              class="mini"
+              onclick="deleteSession(${session.id})"
+            >
+              Eliminar
+            </button>
+
+          </div>
+
+        </div>
+
+      `)
+      .join("");
+
+}
+
+function deleteSession(id) {
+
+  if (
+    !confirm(
+      "¿Eliminar esta sesión?"
+    )
+  ) {
+    return;
+  }
+
+  state.sessions =
+    state.sessions.filter(
+      session =>
+        session.id !== id
+    );
+
+  saveState();
+
+  renderHistory();
+
+  renderStats();
+
+}
+
+/* ==============================
+   WHATSAPP
+============================== */
+
+function openWhatsApp(text) {
+
+  document
+    .getElementById(
+      "sharePreview"
+    )
+    .value = text;
+
+  const url =
+    "https://wa.me/?text=" +
+    encodeURIComponent(text);
+
+  window.open(
+    url,
+    "_blank"
+  );
+
+}
+
+function shareSession(id) {
+
+  const session =
+    state.sessions.find(
+      session =>
+        session.id === id
+    );
+
+  if (
+    session
+  ) {
+
+    openWhatsApp(
+      sessionSummary(session)
+    );
+
+  }
+
+}
+
+document
+  .getElementById("shareLast")
+  .addEventListener(
+    "click",
+    () => {
+
+      const last =
+        state.sessions[
+          state.sessions.length - 1
+        ];
+
+      if (
+        !last
+      ) {
+
+        alert(
+          "Todavía no hay entrenamientos guardados."
+        );
+
+        return;
+
+      }
+
+      openWhatsApp(
+        sessionSummary(last)
+      );
+
+    }
+  );
+
+document
+  .getElementById("shareWeek")
+  .addEventListener(
+    "click",
+    () =>
+      openWhatsApp(
+        periodSummary("week")
+      )
+  );
+
+document
+  .getElementById("shareMonth")
+  .addEventListener(
+    "click",
+    () =>
+      openWhatsApp(
+        periodSummary("month")
+      )
+  );
+
+document
+  .getElementById("shareAll")
+  .addEventListener(
+    "click",
+    () => {
+
+      const last =
+        state.sessions[
+          state.sessions.length - 1
+        ];
+
+      let text = "";
+
+      if (
+        last
+      ) {
+
+        text +=
+          sessionSummary(last);
+
+        text +=
+          "\n\n──────────────\n\n";
+
+      }
+
+      text +=
+        periodSummary("week");
+
+      text +=
+        "\n\n──────────────\n\n";
+
+      text +=
+        periodSummary("month");
+
+      openWhatsApp(text);
+
+    }
+  );
+
+document
+  .getElementById("quickShare")
+  .addEventListener(
+    "click",
+    () => {
+
+      const last =
+        state.sessions[
+          state.sessions.length - 1
+        ];
+
+      if (
+        !last
+      ) {
+
+        alert(
+          "Guardá un entrenamiento primero."
+        );
+
+        return;
+
+      }
+
+      openWhatsApp(
+        sessionSummary(last)
+      );
+
+    }
+  );
+
+/* ==============================
+   BACKUP
+============================== */
+
+document
+  .getElementById("exportBtn")
+  .addEventListener(
+    "click",
+    () => {
+
+      const data =
+        JSON.stringify(
+          state,
+          null,
+          2
+        );
+
+      const blob =
+        new Blob(
+          [data],
+          {
+            type:
+              "application/json"
+          }
+        );
+
+      const link =
+        document.createElement("a");
+
+      link.href =
+        URL.createObjectURL(blob);
+
+      link.download =
+        "SLRP-Training-Backup.json";
+
+      link.click();
+
+      setTimeout(
+        () =>
+          URL.revokeObjectURL(
+            link.href
+          ),
+        1000
+      );
+
+    }
+  );
+
+/* ==============================
+   INIT
+============================== */
+
+renderGym();
+
+renderMobility();
+
+renderStats();
+
+renderHistory();
+
+saveState();
+
+</script>
+
+</body>
+</html>
