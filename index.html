@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="SLRP Training">
 <meta name="theme-color" content="#0b0b0c">
-<title>SLRP Training V3</title>
+<title>SLRP Training V3.1</title>
 <style>
 :root{--bg:#f3f3f5;--card:#fff;--text:#111;--muted:#707076;--line:#dedee3;--dark:#0c0c0d;--soft:#ececf0;--warn:#fff8e6;--warnline:#d5a72b;--good:#edf8ef}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html{scroll-behavior:smooth}
@@ -40,15 +40,15 @@ label.small{font-size:10px;color:var(--muted)}input[type=number],input[type=text
 </head>
 <body>
 <div class="app">
-<header><div><h1>SLRP Training</h1><div class="sub" id="todayText"></div></div><div class="pill" id="saveStatus">â Guardado</div></header>
+<header><div><h1>SLRP Training</h1><div class="sub" id="todayText"></div></div><div class="pill" id="saveStatus">&#9679; Guardado</div></header>
 
 <div class="hero">
-  <div class="heroTop"><div><div class="heroTitle">Tu entrenamiento, sin fricciÃ³n.</div><div class="sub">Rutina de kinesio + tracking + evoluciÃ³n.</div></div><div class="pill" style="background:#2b2b2f;color:#fff" id="currentWeekLabel"></div></div>
+  <div class="heroTop"><div><div class="heroTitle">Tu entrenamiento, sin fricci&#243;n.</div><div class="sub">Rutina de kinesio + tracking + evoluci&#243;n.</div></div><div class="pill" style="background:#2b2b2f;color:#fff" id="currentWeekLabel"></div></div>
   <div class="heroStats">
     <div class="heroStat"><span class="sub">Semana</span><strong id="weekCount">0</strong><span class="sub">sesiones</span></div>
     <div class="heroStat"><span class="sub">Mes</span><strong id="monthCount">0</strong><span class="sub">sesiones</span></div>
-    <div class="heroStat"><span class="sub">Racha</span><strong id="streak">0</strong><span class="sub">dÃ­as</span></div>
-    <div class="heroStat"><span class="sub">Volumen mes</span><strong id="monthVolume">0</strong><span class="sub">kgÂ·reps</span></div>
+    <div class="heroStat"><span class="sub">Racha</span><strong id="streak">0</strong><span class="sub">d&#237;as</span></div>
+    <div class="heroStat"><span class="sub">Volumen mes</span><strong id="monthVolume">0</strong><span class="sub">kg&#183;reps</span></div>
   </div>
 </div>
 
@@ -61,45 +61,45 @@ label.small{font-size:10px;color:var(--muted)}input[type=number],input[type=text
 </nav>
 
 <section id="gym" class="panel active">
-  <div class="days"><button class="day active" data-day="1">DÃ­a 1</button><button class="day" data-day="2">DÃ­a 2</button><button class="day" data-day="3">DÃ­a 3</button></div>
+  <div class="days"><button class="day active" data-day="1">D&#237;a 1</button><button class="day" data-day="2">D&#237;a 2</button><button class="day" data-day="3">D&#237;a 3</button></div>
 
-  <div class="card timerCard"><div><strong>Tiempo de sesiÃ³n</strong><div class="sub">Se guarda con el entrenamiento.</div></div><div><div class="timer" id="sessionTimer">00:00</div><div class="row" style="justify-content:flex-end"><button class="mini" id="timerToggle">Iniciar</button><button class="mini" id="timerReset">Reset</button></div></div></div>
+  <div class="card timerCard"><div><strong>Tiempo de sesi&#243;n</strong><div class="sub">Se guarda con el entrenamiento.</div></div><div><div class="timer" id="sessionTimer">00:00</div><div class="row" style="justify-content:flex-end"><button class="mini" id="timerToggle">Iniciar</button><button class="mini" id="timerReset">Reset</button></div></div></div>
 
   <div class="card">
     <div class="row between"><strong>Progreso de hoy</strong><span id="gymProgressText">0%</span></div>
     <div class="progress"><div id="gymProgress"></div></div>
-    <div class="sub" style="margin-top:8px" id="lastSessionHint">TodavÃ­a no registraste este dÃ­a.</div>
+    <div class="sub" style="margin-top:8px" id="lastSessionHint">Todav&#237;a no registraste este d&#237;a.</div>
   </div>
 
   <div id="gymExercises"></div>
 
   <div class="card">
-    <div class="exercise-title">AerÃ³bico</div><div class="presc">15â20 minutos Â· caminata, bicicleta, elÃ­ptico u otra opciÃ³n.</div>
+    <div class="exercise-title">Aer&#243;bico</div><div class="presc">15&#8211;20 minutos &#183; caminata, bicicleta, el&#237;ptico u otra opci&#243;n.</div>
     <label class="mobrow" style="margin-top:11px"><input type="checkbox" id="aerobic"><span>Completado</span></label>
   </div>
 
   <div class="card">
-    <strong>Â¿CÃ³mo te sentiste?</strong>
+    <strong>&#191;C&#243;mo te sentiste?</strong>
     <div class="feelings" id="gymFeelings">
-      <button data-feel="ð Sin molestias">ð</button><button data-feel="ð Molestia leve">ð</button><button data-feel="ð Molestia moderada">ð</button><button data-feel="ð´ Dolor">ð´</button>
+      <button data-feel="&#128512; Sin molestias">&#128512;</button><button data-feel="&#128578; Molestia leve">&#128578;</button><button data-feel="&#128528; Molestia moderada">&#128528;</button><button data-feel="&#128308; Dolor">&#128308;</button>
     </div>
     <div class="grid2" style="margin-top:9px">
-      <label class="small">Esfuerzo general (RPE 1â10)<input id="gymRpe" type="number" min="1" max="10" inputmode="numeric" placeholder="Ej. 7"></label>
-      <label class="small">Dolor/molestia (0â10)<input id="gymPain" type="number" min="0" max="10" inputmode="numeric" placeholder="0"></label>
+      <label class="small">Esfuerzo general (RPE 1&#8211;10)<input id="gymRpe" type="number" min="1" max="10" inputmode="numeric" placeholder="Ej. 7"></label>
+      <label class="small">Dolor/molestia (0&#8211;10)<input id="gymPain" type="number" min="0" max="10" inputmode="numeric" placeholder="0"></label>
     </div>
-    <textarea id="gymNotes" rows="3" placeholder="Notas: tÃ©cnica, molestias, energÃ­a, etc."></textarea>
+    <textarea id="gymNotes" rows="3" placeholder="Notas: t&#233;cnica, molestias, energ&#237;a, etc."></textarea>
   </div>
 </section>
 
 <section id="mob" class="panel">
-  <div class="card"><strong>Movilidad</strong><div class="presc">Ideal diaria Â· mÃ­nimo 3 veces por semana.</div><div class="progress"><div id="mobWeeklyProgress"></div></div><div class="sub" style="margin-top:7px" id="mobGoalText"></div></div>
+  <div class="card"><strong>Movilidad</strong><div class="presc">Ideal diaria &#183; m&#237;nimo 3 veces por semana.</div><div class="progress"><div id="mobWeeklyProgress"></div></div><div class="sub" style="margin-top:7px" id="mobGoalText"></div></div>
   <div id="mobExercises"></div>
   <div class="card">
-    <strong>Â¿CÃ³mo te sentiste?</strong>
+    <strong>&#191;C&#243;mo te sentiste?</strong>
     <div class="feelings" id="mobFeelings">
-      <button data-feel="ð Sin molestias">ð</button><button data-feel="ð Molestia leve">ð</button><button data-feel="ð Molestia moderada">ð</button><button data-feel="ð´ Dolor">ð´</button>
+      <button data-feel="&#128512; Sin molestias">&#128512;</button><button data-feel="&#128578; Molestia leve">&#128578;</button><button data-feel="&#128528; Molestia moderada">&#128528;</button><button data-feel="&#128308; Dolor">&#128308;</button>
     </div>
-    <label class="small" style="display:block;margin-top:9px">Dolor/molestia (0â10)<input id="mobPain" type="number" min="0" max="10" inputmode="numeric" placeholder="0"></label>
+    <label class="small" style="display:block;margin-top:9px">Dolor/molestia (0&#8211;10)<input id="mobPain" type="number" min="0" max="10" inputmode="numeric" placeholder="0"></label>
     <textarea id="mobNotes" rows="3" placeholder="Notas opcionales"></textarea>
   </div>
 </section>
@@ -107,11 +107,11 @@ label.small{font-size:10px;color:var(--muted)}input[type=number],input[type=text
 <section id="progress" class="panel">
   <div class="grid3">
     <div class="kpi"><span class="sub">Gym semana</span><strong id="gymWeek">0/3</strong><span class="sub">objetivo</span></div>
-    <div class="kpi"><span class="sub">Movilidad</span><strong id="mobWeek">0/3</strong><span class="sub">mÃ­nimo</span></div>
+    <div class="kpi"><span class="sub">Movilidad</span><strong id="mobWeek">0/3</strong><span class="sub">m&#237;nimo</span></div>
     <div class="kpi"><span class="sub">Minutos mes</span><strong id="monthMinutes">0</strong><span class="sub">entrenados</span></div>
   </div>
-  <div class="card"><strong>EvoluciÃ³n de volumen</strong><div class="sub">Volumen = peso Ã reps de series completadas.</div><svg class="chart" id="volumeChart" viewBox="0 0 340 135" preserveAspectRatio="none"></svg></div>
-  <div class="card"><strong>Progreso por ejercicio</strong><div class="presc">ElegÃ­ un ejercicio para ver Ãºltimo peso y mejor registro.</div><select id="exerciseSelect" style="width:100%;margin-top:10px;border:1px solid var(--line);border-radius:12px;padding:11px;font-size:16px;background:white"></select><div id="exerciseStats" style="margin-top:12px"></div></div>
+  <div class="card"><strong>Evoluci&#243;n de volumen</strong><div class="sub">Volumen = peso &#215; reps de series completadas.</div><svg class="chart" id="volumeChart" viewBox="0 0 340 135" preserveAspectRatio="none"></svg></div>
+  <div class="card"><strong>Progreso por ejercicio</strong><div class="presc">Eleg&#237; un ejercicio para ver &#250;ltimo peso y mejor registro.</div><select id="exerciseSelect" style="width:100%;margin-top:10px;border:1px solid var(--line);border-radius:12px;padding:11px;font-size:16px;background:white"></select><div id="exerciseStats" style="margin-top:12px"></div></div>
   <div class="card"><strong>Adherencia</strong><div id="adherenceSummary" class="note"></div></div>
 </section>
 
@@ -120,7 +120,7 @@ label.small{font-size:10px;color:var(--muted)}input[type=number],input[type=text
 </section>
 
 <section id="share" class="panel">
-  <div class="card"><strong>Compartir por WhatsApp</strong><div class="presc">Resumen listo para tu kinesiÃ³logo o para vos.</div><div class="grid2" style="margin-top:12px"><button id="shareLast" class="primary">Ãltimo entrenamiento</button><button id="shareWeek">Semana</button><button id="shareMonth">Mes</button><button id="shareAll">Resumen completo</button></div></div>
+  <div class="card"><strong>Compartir por WhatsApp</strong><div class="presc">Resumen listo para tu kinesi&#243;logo o para vos.</div><div class="grid2" style="margin-top:12px"><button id="shareLast" class="primary">&#218;ltimo entrenamiento</button><button id="shareWeek">Semana</button><button id="shareMonth">Mes</button><button id="shareAll">Resumen completo</button></div></div>
   <div class="card"><strong>Vista previa</strong><textarea id="sharePreview" rows="15" readonly></textarea></div>
 </section>
 </div>
@@ -133,45 +133,45 @@ const STORAGE_KEY="slrp_training_v2"; // conserva los datos de V2
 let state=loadState(),currentDay=1,gymFeeling="",mobFeeling="";
 let timerSeconds=0,timerRunning=false,timerInterval=null;
 
-const YT=q=>"https://www.youtube.com/results?search_query="+encodeURIComponent(q+" tÃ©cnica ejercicio");
-const GS=q=>"https://www.google.com/search?tbm=isch&q="+encodeURIComponent(q+" ejercicio tÃ©cnica");
+const YT=q=>"https://www.youtube.com/results?search_query="+encodeURIComponent(q+" t\u00e9cnica ejercicio");
+const GS=q=>"https://www.google.com/search?tbm=isch&q="+encodeURIComponent(q+" ejercicio t\u00e9cnica");
 
 const gymRoutine={
 1:[
-{name:"Remo bajo para dorsales",p:"12 reps Ã 3 series",sets:[12,12,12],weighted:true,media:"seated cable row",alt:"Remo sentado con banda elÃ¡stica",altWhy:"Mismo patrÃ³n de tracciÃ³n horizontal para espalda y brazos.",altMedia:"seated resistance band row"},
-{name:"Press banco inclinado",p:"10 reps Ã 3 series",sets:[10,10,10],weighted:true,n:"Con mancuerna o multipower",media:"incline dumbbell press",alt:"Press inclinado en mÃ¡quina",altWhy:"Mismo patrÃ³n de empuje para pecho y trÃ­ceps con mÃ¡s estabilidad.",altMedia:"incline chest press machine"},
-{name:"Dorsalera",p:"12 reps Ã 3 series",sets:[12,12,12],weighted:true,media:"lat pulldown",alt:"JalÃ³n con banda desde arriba",altWhy:"Mismo patrÃ³n de tracciÃ³n vertical para dorsales.",altMedia:"resistance band lat pulldown"},
-{name:"BÃ­ceps bilateral sentado",p:"12 reps + 10 reps Ã 2 series",sets:[12,10,10],weighted:true,media:"seated dumbbell biceps curl",alt:"Curl martillo sentado",altWhy:"Trabaja flexores del codo con agarre neutro.",altMedia:"seated hammer curl"},
-{name:"Plancha frontal",p:"30 segundos Ã 2 series",sets:[30,30],time:true,media:"front plank",alt:"Dead bug",altWhy:"Alternativa de control del tronco y anti-extensiÃ³n con apoyo lumbar.",altMedia:"dead bug exercise"},
-{name:"Pallof",p:"20 segundos por lado Ã 2 series",sets:[20,20],time:true,side:true,media:"Pallof press",video:"https://www.youtube.com/shorts/uadHuIgQoK8",alt:"Pallof isomÃ©trico con banda",altWhy:"Mismo objetivo de anti-rotaciÃ³n con resistencia elÃ¡stica.",altMedia:"Pallof hold resistance band"}
+{name:"Remo bajo para dorsales",p:"12 reps \u00d7 3 series",sets:[12,12,12],weighted:true,media:"seated cable row",alt:"Remo sentado con banda el\u00e1stica",altWhy:"Mismo patr\u00f3n de tracci\u00f3n horizontal para espalda y brazos.",altMedia:"seated resistance band row"},
+{name:"Press banco inclinado",p:"10 reps \u00d7 3 series",sets:[10,10,10],weighted:true,n:"Con mancuerna o multipower",media:"incline dumbbell press",alt:"Press inclinado en m\u00e1quina",altWhy:"Mismo patr\u00f3n de empuje para pecho y tr\u00edceps con m\u00e1s estabilidad.",altMedia:"incline chest press machine"},
+{name:"Dorsalera",p:"12 reps \u00d7 3 series",sets:[12,12,12],weighted:true,media:"lat pulldown",alt:"Jal\u00f3n con banda desde arriba",altWhy:"Mismo patr\u00f3n de tracci\u00f3n vertical para dorsales.",altMedia:"resistance band lat pulldown"},
+{name:"B\u00edceps bilateral sentado",p:"12 reps + 10 reps \u00d7 2 series",sets:[12,10,10],weighted:true,media:"seated dumbbell biceps curl",alt:"Curl martillo sentado",altWhy:"Trabaja flexores del codo con agarre neutro.",altMedia:"seated hammer curl"},
+{name:"Plancha frontal",p:"30 segundos \u00d7 2 series",sets:[30,30],time:true,media:"front plank",alt:"Dead bug",altWhy:"Alternativa de control del tronco y anti-extensi\u00f3n con apoyo lumbar.",altMedia:"dead bug exercise"},
+{name:"Pallof",p:"20 segundos por lado \u00d7 2 series",sets:[20,20],time:true,side:true,media:"Pallof press",video:"https://www.youtube.com/shorts/uadHuIgQoK8",alt:"Pallof isom\u00e9trico con banda",altWhy:"Mismo objetivo de anti-rotaci\u00f3n con resistencia el\u00e1stica.",altMedia:"Pallof hold resistance band"}
 ],
 2:[
-{name:"Sentadillas con mancuerna",p:"12 reps + 10 reps Ã 2 series",sets:[12,10,10],weighted:true,n:"ApoyÃ¡ndose en banco",media:"goblet squat to bench",alt:"Sit-to-stand con mancuerna",altWhy:"Mismo patrÃ³n de sentarse/pararse con referencia del banco.",altMedia:"weighted sit to stand bench"},
-{name:"Abductores",p:"12 reps Ã 3 series",sets:[12,12,12],weighted:true,n:"Separar las piernas",media:"hip abduction machine",alt:"AbducciÃ³n de cadera acostado de lado",altWhy:"Trabaja abductores de cadera sin mÃ¡quina.",altMedia:"side lying hip abduction"},
-{name:"Vuelos laterales",p:"10 reps Ã 3 series",sets:[10,10,10],weighted:true,media:"dumbbell lateral raise",alt:"ElevaciÃ³n lateral unilateral en polea",altWhy:"Mismo foco principal en deltoides lateral con tensiÃ³n continua.",altMedia:"single arm cable lateral raise"},
-{name:"Press militar sentado",p:"12 reps Ã 3 series",sets:[12,12,12],weighted:true,media:"seated dumbbell shoulder press",alt:"Press de hombros en mÃ¡quina",altWhy:"Mismo patrÃ³n de empuje vertical con respaldo estable.",altMedia:"seated shoulder press machine"},
-{name:"Plancha frontal",p:"30 segundos Ã 2 series",sets:[30,30],time:true,media:"front plank",alt:"Dead bug",altWhy:"Control del tronco con menor demanda de apoyo de hombros.",altMedia:"dead bug exercise"},
-{name:"Plancha lateral corta",p:"20 segundos por lado Ã 2 series",sets:[20,20],time:true,side:true,media:"short side plank knees",alt:"Plancha lateral en pared",altWhy:"Mismo objetivo de estabilidad lateral con menor carga.",altMedia:"wall side plank"}
+{name:"Sentadillas con mancuerna",p:"12 reps + 10 reps \u00d7 2 series",sets:[12,10,10],weighted:true,n:"Apoy\u00e1ndose en banco",media:"goblet squat to bench",alt:"Sit-to-stand con mancuerna",altWhy:"Mismo patr\u00f3n de sentarse/pararse con referencia del banco.",altMedia:"weighted sit to stand bench"},
+{name:"Abductores",p:"12 reps \u00d7 3 series",sets:[12,12,12],weighted:true,n:"Separar las piernas",media:"hip abduction machine",alt:"Abducci\u00f3n de cadera acostado de lado",altWhy:"Trabaja abductores de cadera sin m\u00e1quina.",altMedia:"side lying hip abduction"},
+{name:"Vuelos laterales",p:"10 reps \u00d7 3 series",sets:[10,10,10],weighted:true,media:"dumbbell lateral raise",alt:"Elevaci\u00f3n lateral unilateral en polea",altWhy:"Mismo foco principal en deltoides lateral con tensi\u00f3n continua.",altMedia:"single arm cable lateral raise"},
+{name:"Press militar sentado",p:"12 reps \u00d7 3 series",sets:[12,12,12],weighted:true,media:"seated dumbbell shoulder press",alt:"Press de hombros en m\u00e1quina",altWhy:"Mismo patr\u00f3n de empuje vertical con respaldo estable.",altMedia:"seated shoulder press machine"},
+{name:"Plancha frontal",p:"30 segundos \u00d7 2 series",sets:[30,30],time:true,media:"front plank",alt:"Dead bug",altWhy:"Control del tronco con menor demanda de apoyo de hombros.",altMedia:"dead bug exercise"},
+{name:"Plancha lateral corta",p:"20 segundos por lado \u00d7 2 series",sets:[20,20],time:true,side:true,media:"short side plank knees",alt:"Plancha lateral en pared",altWhy:"Mismo objetivo de estabilidad lateral con menor carga.",altMedia:"wall side plank"}
 ],
 3:[
-{name:"Peso muerto con mancuerna",p:"8 reps Ã 4 series",sets:[8,8,8,8],weighted:true,n:"POCO PESO Â· muy tÃ©cnico",important:true,media:"dumbbell deadlift hip hinge",video:"https://www.youtube.com/watch?v=x7W2BOKWWKs",alt:"Pull-through en polea",altWhy:"PatrÃ³n dominante de cadera con carga guiada. Usar sÃ³lo si tu kinesiÃ³logo lo aprueba.",altMedia:"cable pull through"},
-{name:"Remo bajo",p:"10 reps Ã 3 series",sets:[10,10,10],weighted:true,n:"MÃ¡s peso que DÃ­a 1",media:"seated cable row",alt:"Remo sentado con banda elÃ¡stica",altWhy:"Mismo patrÃ³n de tracciÃ³n horizontal.",altMedia:"seated resistance band row"},
-{name:"Puente glÃºteo",p:"10 reps Ã 3 series",sets:[10,10,10],weighted:true,n:"Peso moderado. Hacerlo lento y con buena tÃ©cnica.",media:"weighted glute bridge",alt:"Hip thrust en banco",altWhy:"ExtensiÃ³n de cadera con Ã©nfasis en glÃºteos.",altMedia:"hip thrust bench"},
-{name:"Bird-dog",p:"8 repeticiones por lado Ã 2 series",sets:[8,8],side:true,media:"bird dog exercise",video:"https://www.youtube.com/shorts/Tjo5oYHoS8M",alt:"Dead bug contralateral",altWhy:"Control lumbo-pÃ©lvico contralateral en posiciÃ³n supina.",altMedia:"contralateral dead bug"},
-{name:"Plancha frontal",p:"30 segundos Ã 2 series",sets:[30,30],time:true,media:"front plank",alt:"Dead bug",altWhy:"Control de core con apoyo lumbar.",altMedia:"dead bug exercise"},
-{name:"Pallof",p:"20 segundos por lado Ã 2 series",sets:[20,20],time:true,side:true,media:"Pallof press",alt:"Pallof isomÃ©trico con banda",altWhy:"Mismo objetivo de anti-rotaciÃ³n.",altMedia:"Pallof hold resistance band"}
+{name:"Peso muerto con mancuerna",p:"8 reps \u00d7 4 series",sets:[8,8,8,8],weighted:true,n:"POCO PESO \u00b7 muy t\u00e9cnico",important:true,media:"dumbbell deadlift hip hinge",video:"https://www.youtube.com/watch?v=x7W2BOKWWKs",alt:"Pull-through en polea",altWhy:"Patr\u00f3n dominante de cadera con carga guiada. Usar s\u00f3lo si tu kinesi\u00f3logo lo aprueba.",altMedia:"cable pull through"},
+{name:"Remo bajo",p:"10 reps \u00d7 3 series",sets:[10,10,10],weighted:true,n:"M\u00e1s peso que D\u00eda 1",media:"seated cable row",alt:"Remo sentado con banda el\u00e1stica",altWhy:"Mismo patr\u00f3n de tracci\u00f3n horizontal.",altMedia:"seated resistance band row"},
+{name:"Puente gl\u00fateo",p:"10 reps \u00d7 3 series",sets:[10,10,10],weighted:true,n:"Peso moderado. Hacerlo lento y con buena t\u00e9cnica.",media:"weighted glute bridge",alt:"Hip thrust en banco",altWhy:"Extensi\u00f3n de cadera con \u00e9nfasis en gl\u00fateos.",altMedia:"hip thrust bench"},
+{name:"Bird-dog",p:"8 repeticiones por lado \u00d7 2 series",sets:[8,8],side:true,media:"bird dog exercise",video:"https://www.youtube.com/shorts/Tjo5oYHoS8M",alt:"Dead bug contralateral",altWhy:"Control lumbo-p\u00e9lvico contralateral en posici\u00f3n supina.",altMedia:"contralateral dead bug"},
+{name:"Plancha frontal",p:"30 segundos \u00d7 2 series",sets:[30,30],time:true,media:"front plank",alt:"Dead bug",altWhy:"Control de core con apoyo lumbar.",altMedia:"dead bug exercise"},
+{name:"Pallof",p:"20 segundos por lado \u00d7 2 series",sets:[20,20],time:true,side:true,media:"Pallof press",alt:"Pallof isom\u00e9trico con banda",altWhy:"Mismo objetivo de anti-rotaci\u00f3n.",altMedia:"Pallof hold resistance band"}
 ]};
 
 const mobilityRoutine=[
-{name:"Movilidad de columna lumbar",p:"12 movimientos por lado",media:"supine lumbar rotation knees side to side",alt:"BasculaciÃ³n pÃ©lvica supina",altWhy:"Movimiento suave de pelvis/columna lumbar.",altMedia:"supine pelvic tilt"},
-{name:"Movilidad cadera â columna",p:"10 movimientos por lado Ã 2 series",media:"supine figure 4 hip rotation mobility",alt:"90/90 de cadera asistido",altWhy:"Movilidad de cadera con control del tronco.",altMedia:"90 90 hip mobility assisted"},
-{name:"ActivaciÃ³n del transverso del abdomen",p:"12 repeticiones Ã 2 series",n:"Boca arriba: empujar la zona baja de la espalda contra el piso al sacar el aire. El ombligo desciende hacia el suelo.",media:"transverse abdominis activation breathing",alt:"Dead bug respiratorio",altWhy:"Combina respiraciÃ³n y control lumbo-pÃ©lvico.",altMedia:"dead bug breathing core"},
-{name:"Gato bueno / gato malo",p:"10 repeticiones Ã 2 series",media:"cat cow exercise",alt:"Rock-back en cuadrupedia",altWhy:"Movilidad suave en cuadrupedia manteniendo control de columna.",altMedia:"quadruped rock back mobility"},
-{name:"Movilidad torÃ¡cica",p:"10 veces por lado",n:"A cuatro patas: deslizar un brazo por el suelo, bajar el hombro y luego abrir hacia el techo mirando la mano.",media:"thread the needle thoracic rotation",alt:"Open book acostado de lado",altWhy:"RotaciÃ³n torÃ¡cica con pelvis estable.",altMedia:"open book thoracic rotation"}
+{name:"Movilidad de columna lumbar",p:"12 movimientos por lado",media:"supine lumbar rotation knees side to side",alt:"Basculaci\u00f3n p\u00e9lvica supina",altWhy:"Movimiento suave de pelvis/columna lumbar.",altMedia:"supine pelvic tilt"},
+{name:"Movilidad cadera \u2013 columna",p:"10 movimientos por lado \u00d7 2 series",media:"supine figure 4 hip rotation mobility",alt:"90/90 de cadera asistido",altWhy:"Movilidad de cadera con control del tronco.",altMedia:"90 90 hip mobility assisted"},
+{name:"Activaci\u00f3n del transverso del abdomen",p:"12 repeticiones \u00d7 2 series",n:"Boca arriba: empujar la zona baja de la espalda contra el piso al sacar el aire. El ombligo desciende hacia el suelo.",media:"transverse abdominis activation breathing",alt:"Dead bug respiratorio",altWhy:"Combina respiraci\u00f3n y control lumbo-p\u00e9lvico.",altMedia:"dead bug breathing core"},
+{name:"Gato bueno / gato malo",p:"10 repeticiones \u00d7 2 series",media:"cat cow exercise",alt:"Rock-back en cuadrupedia",altWhy:"Movilidad suave en cuadrupedia manteniendo control de columna.",altMedia:"quadruped rock back mobility"},
+{name:"Movilidad tor\u00e1cica",p:"10 veces por lado",n:"A cuatro patas: deslizar un brazo por el suelo, bajar el hombro y luego abrir hacia el techo mirando la mano.",media:"thread the needle thoracic rotation",alt:"Open book acostado de lado",altWhy:"Rotaci\u00f3n tor\u00e1cica con pelvis estable.",altMedia:"open book thoracic rotation"}
 ];
 
 function loadState(){try{const s=localStorage.getItem(STORAGE_KEY);if(s){const o=JSON.parse(s);o.sessions=o.sessions||[];o.lastWeights=o.lastWeights||{};return o}}catch(e){}return{sessions:[],lastWeights:{}}}
-function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state));document.getElementById("saveStatus").textContent="â Guardado"}
+function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state));document.getElementById("saveStatus").textContent="\u25cf Guardado"}
 function toast(t){const e=document.getElementById("toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),1600)}
 function fmtDate(d){return new Intl.DateTimeFormat("es-AR",{day:"2-digit",month:"2-digit",year:"2-digit"}).format(d)}
 function startOfWeek(d){const r=new Date(d),x=(r.getDay()+6)%7;r.setHours(0,0,0,0);r.setDate(r.getDate()-x);return r}
@@ -189,20 +189,20 @@ document.querySelectorAll(".day").forEach(b=>b.addEventListener("click",()=>{cur
 
 function mediaButtons(e){
   const video=e.video||YT(e.media||e.name);
-  return `<div class="mediaRow"><a class="btn" href="${video}" target="_blank" rel="noopener">â¶ï¸ Video tÃ©cnica</a><a class="btn" href="${GS(e.media||e.name)}" target="_blank" rel="noopener">â§ Fotos</a></div>`;
+  return `<div class="mediaRow"><a class="btn" href="${video}" target="_blank" rel="noopener">\u25b6\ufe0e Video t\u00e9cnica</a><a class="btn" href="${GS(e.media||e.name)}" target="_blank" rel="noopener">\u25a7 Fotos</a></div>`;
 }
 function altBox(e){
-  return `<details class="alt"><summary>Alternativa sugerida</summary><div class="exercise-title" style="font-size:15px;margin-top:8px">${e.alt}</div><div class="presc">${e.altWhy}</div><div class="tiny" style="margin-top:6px">No reemplazar el ejercicio indicado sin aprobaciÃ³n de tu kinesiÃ³logo.</div><div class="mediaRow"><a class="btn" href="${YT(e.altMedia||e.alt)}" target="_blank">â¶ï¸ Video alternativa</a><a class="btn" href="${GS(e.altMedia||e.alt)}" target="_blank">â§ Fotos</a></div></details>`;
+  return `<details class="alt"><summary>Alternativa sugerida</summary><div class="exercise-title" style="font-size:15px;margin-top:8px">${e.alt}</div><div class="presc">${e.altWhy}</div><div class="tiny" style="margin-top:6px">No reemplazar el ejercicio indicado sin aprobaci\u00f3n de tu kinesi\u00f3logo.</div><div class="mediaRow"><a class="btn" href="${YT(e.altMedia||e.alt)}" target="_blank">\u25b6\ufe0e Video alternativa</a><a class="btn" href="${GS(e.altMedia||e.alt)}" target="_blank">\u25a7 Fotos</a></div></details>`;
 }
 function renderGym(){
  const c=document.getElementById("gymExercises"),last=lastGymDay(currentDay);
- document.getElementById("lastSessionHint").textContent=last?`Ãltima vez: ${fmtDate(new Date(last.date))}${last.durationSec?` Â· ${Math.round(last.durationSec/60)} min`:''}`:"TodavÃ­a no registraste este dÃ­a.";
+ document.getElementById("lastSessionHint").textContent=last?`\u00daltima vez: ${fmtDate(new Date(last.date))}${last.durationSec?` \u00b7 ${Math.round(last.durationSec/60)} min`:''}`:"Todav\u00eda no registraste este d\u00eda.";
  c.innerHTML=gymRoutine[currentDay].map((e,i)=>{
    const rows=e.sets.map((t,j)=>e.weighted?
-   `<div class="setrow"><div class="setlabel">Serie ${j+1}</div><label class="small">Peso kg<input type="number" step=".5" min="0" inputmode="decimal" data-weight="${j}" value="${lastWeight(e.name,j)}" placeholder="â"></label><label class="small">Reps<input type="number" min="0" inputmode="numeric" data-value="${j}" value="${t}"></label><label class="donebox"><input type="checkbox" data-done="${j}"></label></div>`:
+   `<div class="setrow"><div class="setlabel">Serie ${j+1}</div><label class="small">Peso kg<input type="number" step=".5" min="0" inputmode="decimal" data-weight="${j}" value="${lastWeight(e.name,j)}" placeholder="\u2014"></label><label class="small">Reps<input type="number" min="0" inputmode="numeric" data-value="${j}" value="${t}"></label><label class="donebox"><input type="checkbox" data-done="${j}"></label></div>`:
    `<div class="setrow time"><div class="setlabel">Serie ${j+1}</div><label class="small">${e.time?"Segundos":"Reps"}<input type="number" min="0" inputmode="numeric" data-value="${j}" value="${t}"></label><label class="donebox"><input type="checkbox" data-done="${j}"></label></div>`).join("");
    let previous="";
-   if(last){const old=last.exercises?.find(x=>x.name===e.name);if(old){const vals=old.sets?.filter(x=>x.done).map(x=>(x.weight?`${x.weight}kg Ã `:"")+x.value);if(vals?.length)previous=`<div class="tiny" style="margin-top:8px">Ãltima vez: ${vals.join(" Â· ")}</div>`}}
+   if(last){const old=last.exercises?.find(x=>x.name===e.name);if(old){const vals=old.sets?.filter(x=>x.done).map(x=>(x.weight?`${x.weight}kg \u00d7 `:"")+x.value);if(vals?.length)previous=`<div class="tiny" style="margin-top:8px">\u00daltima vez: ${vals.join(" \u00b7 ")}</div>`}}
    return `<article class="card ${e.important?"warning":""}" data-exercise="${i}"><div class="exercise-head"><div><div class="exercise-title">${i+1}. ${e.name}</div><div class="presc">${e.p}</div>${e.n?`<div class="note">${e.n}</div>`:""}${previous}</div></div>${mediaButtons(e)}<div class="sets">${rows}</div>${altBox(e)}</article>`;
  }).join("");
  c.querySelectorAll("input").forEach(x=>x.addEventListener("change",updateProgress));updateProgress();
@@ -223,12 +223,12 @@ document.getElementById("timerReset").onclick=()=>{timerRunning=false;clearInter
 function saveGym(){
  const ex=[];document.querySelectorAll("#gymExercises [data-exercise]").forEach((card,i)=>{const e=gymRoutine[currentDay][i],sets=[];card.querySelectorAll(".setrow").forEach((r,j)=>{const wi=r.querySelector("[data-weight]"),vi=r.querySelector("[data-value]"),di=r.querySelector("[data-done]"),weight=wi?wi.value:"",value=vi.value,done=di.checked;if(e.weighted&&weight!==""){state.lastWeights[e.name]=state.lastWeights[e.name]||{};state.lastWeights[e.name][j]=weight}sets.push({weight,value,done})});ex.push({name:e.name,sets})});
  state.sessions.push({id:Date.now(),date:new Date().toISOString(),type:"Gym",day:currentDay,feeling:gymFeeling,rpe:+document.getElementById("gymRpe").value||null,pain:+document.getElementById("gymPain").value||0,notes:document.getElementById("gymNotes").value,aerobic:document.getElementById("aerobic").checked,durationSec:timerSeconds,exercises:ex});
- saveState();renderStats();renderHistory();toast("Entrenamiento guardado â");renderGym();
+ saveState();renderStats();renderHistory();toast("Entrenamiento guardado \u2713");renderGym();
 }
 function saveMobility(){
  const ex=[...document.querySelectorAll("[data-mob]")].map((x,i)=>({name:mobilityRoutine[i].name,done:x.checked}));
  state.sessions.push({id:Date.now(),date:new Date().toISOString(),type:"Movilidad",feeling:mobFeeling,pain:+document.getElementById("mobPain").value||0,notes:document.getElementById("mobNotes").value,exercises:ex});
- saveState();renderStats();renderHistory();renderMobGoal();toast("Movilidad guardada â");
+ saveState();renderStats();renderHistory();renderMobGoal();toast("Movilidad guardada \u2713");
 }
 document.getElementById("saveGym").onclick=saveGym;document.getElementById("saveMob").onclick=saveMobility;
 
@@ -238,29 +238,29 @@ function renderStats(){
  document.getElementById("weekCount").textContent=week.length;document.getElementById("monthCount").textContent=month.length;document.getElementById("monthVolume").textContent=Math.round(month.reduce((a,s)=>a+sessionVolume(s),0)).toLocaleString("es-AR");
  const dates=[...new Set(state.sessions.map(s=>s.date.slice(0,10)))],today=new Date();today.setHours(0,0,0,0);let streak=0;for(let i=0;i<365;i++){const k=today.toISOString().slice(0,10);if(dates.includes(k))streak++;else if(i>0)break;today.setDate(today.getDate()-1)}document.getElementById("streak").textContent=streak;renderMobGoal();
 }
-function renderMobGoal(){const ws=startOfWeek(new Date()),mob=state.sessions.filter(s=>s.type==="Movilidad"&&new Date(s.date)>=ws).length,p=Math.min(100,Math.round(mob/3*100));document.getElementById("mobWeeklyProgress").style.width=p+"%";document.getElementById("mobGoalText").textContent=`${mob}/3 sesiones mÃ­nimas esta semana${mob>=3?" â":""}`}
+function renderMobGoal(){const ws=startOfWeek(new Date()),mob=state.sessions.filter(s=>s.type==="Movilidad"&&new Date(s.date)>=ws).length,p=Math.min(100,Math.round(mob/3*100));document.getElementById("mobWeeklyProgress").style.width=p+"%";document.getElementById("mobGoalText").textContent=`${mob}/3 sesiones m\u00ednimas esta semana${mob>=3?" \u2713":""}`}
 
 function renderProgress(){
  const now=new Date(),ws=startOfWeek(now),week=state.sessions.filter(s=>new Date(s.date)>=ws),month=state.sessions.filter(s=>sameMonth(new Date(s.date),now));
  document.getElementById("gymWeek").textContent=week.filter(s=>s.type==="Gym").length+"/3";document.getElementById("mobWeek").textContent=week.filter(s=>s.type==="Movilidad").length+"/3";document.getElementById("monthMinutes").textContent=Math.round(month.reduce((a,s)=>a+(s.durationSec||0),0)/60);
  const gym=state.sessions.filter(s=>s.type==="Gym").slice(-10),vals=gym.map(sessionVolume),svg=document.getElementById("volumeChart");
- if(!vals.length){svg.innerHTML='<text x="12" y="70">TodavÃ­a no hay datos de volumen.</text>'}else{const max=Math.max(...vals,1),pts=vals.map((v,i)=>[15+i*(310/Math.max(vals.length-1,1)),115-(v/max)*90]);svg.innerHTML='<line class="axis" x1="10" y1="115" x2="330" y2="115"/>'+`<polyline class="line" points="${pts.map(p=>p.join(",")).join(" ")}"/>`+pts.map((p,i)=>`<circle class="dot" cx="${p[0]}" cy="${p[1]}" r="4"/><text x="${p[0]-7}" y="130">${i+1}</text>`).join("")}
- renderExerciseStats();const total=week.length,gymN=week.filter(s=>s.type==="Gym").length,mobN=week.filter(s=>s.type==="Movilidad").length;document.getElementById("adherenceSummary").innerHTML=`Esta semana registraste <b>${total}</b> sesiones: <b>${gymN}</b> de gym y <b>${mobN}</b> de movilidad. Objetivo sugerido por la rutina: 3 dÃ­as de gym y al menos 3 sesiones de movilidad.`;
+ if(!vals.length){svg.innerHTML='<text x="12" y="70">Todav\u00eda no hay datos de volumen.</text>'}else{const max=Math.max(...vals,1),pts=vals.map((v,i)=>[15+i*(310/Math.max(vals.length-1,1)),115-(v/max)*90]);svg.innerHTML='<line class="axis" x1="10" y1="115" x2="330" y2="115"/>'+`<polyline class="line" points="${pts.map(p=>p.join(",")).join(" ")}"/>`+pts.map((p,i)=>`<circle class="dot" cx="${p[0]}" cy="${p[1]}" r="4"/><text x="${p[0]-7}" y="130">${i+1}</text>`).join("")}
+ renderExerciseStats();const total=week.length,gymN=week.filter(s=>s.type==="Gym").length,mobN=week.filter(s=>s.type==="Movilidad").length;document.getElementById("adherenceSummary").innerHTML=`Esta semana registraste <b>${total}</b> sesiones: <b>${gymN}</b> de gym y <b>${mobN}</b> de movilidad. Objetivo sugerido por la rutina: 3 d\u00edas de gym y al menos 3 sesiones de movilidad.`;
 }
 function fillExerciseSelect(){const names=[...new Set(Object.values(gymRoutine).flat().filter(e=>e.weighted).map(e=>e.name))];document.getElementById("exerciseSelect").innerHTML=names.map(n=>`<option>${n}</option>`).join("");document.getElementById("exerciseSelect").onchange=renderExerciseStats}
-function renderExerciseStats(){const sel=document.getElementById("exerciseSelect"),name=sel.value;if(!name)return;const hist=[];state.sessions.filter(s=>s.type==="Gym").forEach(s=>{const e=s.exercises?.find(x=>x.name===name);if(e){const done=e.sets?.filter(x=>x.done&&x.weight)||[];if(done.length)hist.push({date:s.date,max:Math.max(...done.map(x=>+x.weight||0)),volume:done.reduce((a,x)=>a+(+x.weight||0)*(+x.value||0),0)})}});const box=document.getElementById("exerciseStats");if(!hist.length){box.innerHTML='<div class="empty">TodavÃ­a no hay registros con peso para este ejercicio.</div>';return}const last=hist.at(-1),best=Math.max(...hist.map(x=>x.max));box.innerHTML=`<div class="grid3"><div class="kpi"><span class="sub">Ãltimo peso</span><strong>${last.max} kg</strong><span class="sub">${fmtDate(new Date(last.date))}</span></div><div class="kpi"><span class="sub">Mejor peso</span><strong>${best} kg</strong><span class="sub">registrado</span></div><div class="kpi"><span class="sub">Ãlt. volumen</span><strong>${Math.round(last.volume)}</strong><span class="sub">kgÂ·reps</span></div></div>`}
+function renderExerciseStats(){const sel=document.getElementById("exerciseSelect"),name=sel.value;if(!name)return;const hist=[];state.sessions.filter(s=>s.type==="Gym").forEach(s=>{const e=s.exercises?.find(x=>x.name===name);if(e){const done=e.sets?.filter(x=>x.done&&x.weight)||[];if(done.length)hist.push({date:s.date,max:Math.max(...done.map(x=>+x.weight||0)),volume:done.reduce((a,x)=>a+(+x.weight||0)*(+x.value||0),0)})}});const box=document.getElementById("exerciseStats");if(!hist.length){box.innerHTML='<div class="empty">Todav\u00eda no hay registros con peso para este ejercicio.</div>';return}const last=hist.at(-1),best=Math.max(...hist.map(x=>x.max));box.innerHTML=`<div class="grid3"><div class="kpi"><span class="sub">\u00daltimo peso</span><strong>${last.max} kg</strong><span class="sub">${fmtDate(new Date(last.date))}</span></div><div class="kpi"><span class="sub">Mejor peso</span><strong>${best} kg</strong><span class="sub">registrado</span></div><div class="kpi"><span class="sub">\u00dalt. volumen</span><strong>${Math.round(last.volume)}</strong><span class="sub">kg\u00b7reps</span></div></div>`}
 
 function sessionSummary(s){
- const lines=[`SLRP Training â ${s.type}${s.day?" Â· DÃ­a "+s.day:""}`,new Date(s.date).toLocaleString("es-AR")];
- if(s.type==="Gym"){let d=0,t=0;(s.exercises||[]).forEach(e=>(e.sets||[]).forEach(x=>{t++;if(x.done)d++}));lines.push(`Series completadas: ${d}/${t}`);if(s.durationSec)lines.push(`DuraciÃ³n: ${Math.round(s.durationSec/60)} min`);lines.push(`AerÃ³bico: ${s.aerobic?"SÃ­":"No"}`);lines.push(`Volumen: ${Math.round(sessionVolume(s))} kgÂ·reps`);(s.exercises||[]).forEach(e=>{const v=(e.sets||[]).filter(x=>x.done).map(x=>(x.weight?x.weight+" kg Ã ":"")+x.value);if(v.length)lines.push(`${e.name}: ${v.join(" Â· ")}`)})}else{const d=(s.exercises||[]).filter(x=>x.done).length;lines.push(`Ejercicios completados: ${d}/${s.exercises?.length||0}`)}
- if(s.feeling)lines.push(`SensaciÃ³n: ${s.feeling}`);if(s.rpe)lines.push(`RPE: ${s.rpe}/10`);if(s.pain!=null)lines.push(`Molestia/dolor: ${s.pain}/10`);if(s.notes)lines.push(`Notas: ${s.notes}`);return lines.join("\n")
+ const lines=[`SLRP Training \u2014 ${s.type}${s.day?" \u00b7 D\u00eda "+s.day:""}`,new Date(s.date).toLocaleString("es-AR")];
+ if(s.type==="Gym"){let d=0,t=0;(s.exercises||[]).forEach(e=>(e.sets||[]).forEach(x=>{t++;if(x.done)d++}));lines.push(`Series completadas: ${d}/${t}`);if(s.durationSec)lines.push(`Duraci\u00f3n: ${Math.round(s.durationSec/60)} min`);lines.push(`Aer\u00f3bico: ${s.aerobic?"S\u00ed":"No"}`);lines.push(`Volumen: ${Math.round(sessionVolume(s))} kg\u00b7reps`);(s.exercises||[]).forEach(e=>{const v=(e.sets||[]).filter(x=>x.done).map(x=>(x.weight?x.weight+" kg \u00d7 ":"")+x.value);if(v.length)lines.push(`${e.name}: ${v.join(" \u00b7 ")}`)})}else{const d=(s.exercises||[]).filter(x=>x.done).length;lines.push(`Ejercicios completados: ${d}/${s.exercises?.length||0}`)}
+ if(s.feeling)lines.push(`Sensaci\u00f3n: ${s.feeling}`);if(s.rpe)lines.push(`RPE: ${s.rpe}/10`);if(s.pain!=null)lines.push(`Molestia/dolor: ${s.pain}/10`);if(s.notes)lines.push(`Notas: ${s.notes}`);return lines.join("\n")
 }
-function periodSummary(kind){const now=new Date(),arr=kind==="week"?state.sessions.filter(s=>new Date(s.date)>=startOfWeek(now)):state.sessions.filter(s=>sameMonth(new Date(s.date),now)),gym=arr.filter(s=>s.type==="Gym"),mob=arr.filter(s=>s.type==="Movilidad");const lines=[`SLRP Training â Resumen ${kind==="week"?"semanal":"mensual"}`,`Sesiones: ${arr.length} Â· Gym ${gym.length} Â· Movilidad ${mob.length}`,`Tiempo gym: ${Math.round(gym.reduce((a,s)=>a+(s.durationSec||0),0)/60)} min`,`Volumen: ${Math.round(gym.reduce((a,s)=>a+sessionVolume(s),0))} kgÂ·reps`];[1,2,3].forEach(d=>{const n=gym.filter(s=>s.day===d).length;if(n)lines.push(`DÃ­a ${d}: ${n} sesiÃ³n${n===1?"":"es"}`)});return lines.join("\n")}
-function renderHistory(){const c=document.getElementById("historyList");if(!state.sessions.length){c.innerHTML='<div class="empty">TodavÃ­a no hay sesiones guardadas.</div>';return}c.innerHTML=state.sessions.slice().reverse().map(s=>`<div class="history-item"><div class="row between"><div><strong>${s.type}${s.day?" Â· DÃ­a "+s.day:""}</strong><div class="sub">${new Date(s.date).toLocaleString("es-AR")}</div></div><span class="badge2">${s.type==="Gym"?Math.round(sessionVolume(s))+" kgÂ·reps":"movilidad"}</span></div><div class="note" style="white-space:pre-wrap">${sessionSummary(s).split("\n").slice(2).join("\n")}</div><div class="row" style="margin-top:8px"><button class="mini" onclick="shareSession(${s.id})">WhatsApp</button><button class="mini" onclick="deleteSession(${s.id})">Eliminar</button></div></div>`).join("")}
-function deleteSession(id){if(!confirm("Â¿Eliminar esta sesiÃ³n?"))return;state.sessions=state.sessions.filter(s=>s.id!==id);saveState();renderStats();renderHistory();toast("SesiÃ³n eliminada")}
+function periodSummary(kind){const now=new Date(),arr=kind==="week"?state.sessions.filter(s=>new Date(s.date)>=startOfWeek(now)):state.sessions.filter(s=>sameMonth(new Date(s.date),now)),gym=arr.filter(s=>s.type==="Gym"),mob=arr.filter(s=>s.type==="Movilidad");const lines=[`SLRP Training \u2014 Resumen ${kind==="week"?"semanal":"mensual"}`,`Sesiones: ${arr.length} \u00b7 Gym ${gym.length} \u00b7 Movilidad ${mob.length}`,`Tiempo gym: ${Math.round(gym.reduce((a,s)=>a+(s.durationSec||0),0)/60)} min`,`Volumen: ${Math.round(gym.reduce((a,s)=>a+sessionVolume(s),0))} kg\u00b7reps`];[1,2,3].forEach(d=>{const n=gym.filter(s=>s.day===d).length;if(n)lines.push(`D\u00eda ${d}: ${n} sesi\u00f3n${n===1?"":"es"}`)});return lines.join("\n")}
+function renderHistory(){const c=document.getElementById("historyList");if(!state.sessions.length){c.innerHTML='<div class="empty">Todav\u00eda no hay sesiones guardadas.</div>';return}c.innerHTML=state.sessions.slice().reverse().map(s=>`<div class="history-item"><div class="row between"><div><strong>${s.type}${s.day?" \u00b7 D\u00eda "+s.day:""}</strong><div class="sub">${new Date(s.date).toLocaleString("es-AR")}</div></div><span class="badge2">${s.type==="Gym"?Math.round(sessionVolume(s))+" kg\u00b7reps":"movilidad"}</span></div><div class="note" style="white-space:pre-wrap">${sessionSummary(s).split("\n").slice(2).join("\n")}</div><div class="row" style="margin-top:8px"><button class="mini" onclick="shareSession(${s.id})">WhatsApp</button><button class="mini" onclick="deleteSession(${s.id})">Eliminar</button></div></div>`).join("")}
+function deleteSession(id){if(!confirm("\u00bfEliminar esta sesi\u00f3n?"))return;state.sessions=state.sessions.filter(s=>s.id!==id);saveState();renderStats();renderHistory();toast("Sesi\u00f3n eliminada")}
 function wa(text){document.getElementById("sharePreview").value=text;window.open("https://wa.me/?text="+encodeURIComponent(text),"_blank")}
 function shareSession(id){const s=state.sessions.find(x=>x.id===id);if(s)wa(sessionSummary(s))}
-document.getElementById("shareLast").onclick=()=>{const s=state.sessions.at(-1);if(!s)return toast("No hay sesiones");wa(sessionSummary(s))};document.getElementById("shareWeek").onclick=()=>wa(periodSummary("week"));document.getElementById("shareMonth").onclick=()=>wa(periodSummary("month"));document.getElementById("shareAll").onclick=()=>{const s=state.sessions.at(-1);wa((s?sessionSummary(s)+"\n\nââââââââ\n\n":"")+periodSummary("week")+"\n\nââââââââ\n\n"+periodSummary("month"))};document.getElementById("quickShare").onclick=()=>{const s=state.sessions.at(-1);if(!s)return toast("GuardÃ¡ una sesiÃ³n primero");wa(sessionSummary(s))};
+document.getElementById("shareLast").onclick=()=>{const s=state.sessions.at(-1);if(!s)return toast("No hay sesiones");wa(sessionSummary(s))};document.getElementById("shareWeek").onclick=()=>wa(periodSummary("week"));document.getElementById("shareMonth").onclick=()=>wa(periodSummary("month"));document.getElementById("shareAll").onclick=()=>{const s=state.sessions.at(-1);wa((s?sessionSummary(s)+"\n\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\n":"")+periodSummary("week")+"\n\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\n"+periodSummary("month"))};document.getElementById("quickShare").onclick=()=>{const s=state.sessions.at(-1);if(!s)return toast("Guard\u00e1 una sesi\u00f3n primero");wa(sessionSummary(s))};
 
 document.getElementById("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="SLRP-Training-Backup.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
 
