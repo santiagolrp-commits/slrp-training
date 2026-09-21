@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="SLRP Training">
 <meta name="theme-color" content="#0b0b0c">
-<title>SLRP Training V3.1</title>
+<title>SLRP Training V3.2</title>
 <style>
 :root{--bg:#f3f3f5;--card:#fff;--text:#111;--muted:#707076;--line:#dedee3;--dark:#0c0c0d;--soft:#ececf0;--warn:#fff8e6;--warnline:#d5a72b;--good:#edf8ef}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html{scroll-behavior:smooth}
@@ -74,7 +74,21 @@ label.small{font-size:10px;color:var(--muted)}input[type=number],input[type=text
   <div id="gymExercises"></div>
 
   <div class="card">
-    <div class="exercise-title">Aer&#243;bico</div><div class="presc">15&#8211;20 minutos &#183; caminata, bicicleta, el&#237;ptico u otra opci&#243;n.</div>
+    <div class="exercise-title">Aer&#243;bico</div>
+    <div class="presc">15&#8211;20 minutos. Eleg&#237; qu&#233; hiciste y registr&#225; los datos para medir tu evoluci&#243;n.</div>
+    <label class="small" style="display:block;margin-top:12px">
+      Actividad
+      <select id="cardioType" style="width:100%;margin-top:5px;border:1px solid var(--line);border-radius:12px;padding:11px;font-size:16px;background:white">
+        <option value="">Seleccionar...</option>
+        <option value="walking">Caminata / cinta</option>
+        <option value="bike">Bicicleta</option>
+        <option value="elliptical">El&#237;ptico</option>
+        <option value="rower">Remo erg&#243;metro</option>
+        <option value="stairs">Escaladora / StairMaster</option>
+        <option value="other">Otro</option>
+      </select>
+    </label>
+    <div id="cardioFields" style="margin-top:10px"></div>
     <label class="mobrow" style="margin-top:11px"><input type="checkbox" id="aerobic"><span>Completado</span></label>
   </div>
 
@@ -112,6 +126,20 @@ label.small{font-size:10px;color:var(--muted)}input[type=number],input[type=text
   </div>
   <div class="card"><strong>Evoluci&#243;n de volumen</strong><div class="sub">Volumen = peso &#215; reps de series completadas.</div><svg class="chart" id="volumeChart" viewBox="0 0 340 135" preserveAspectRatio="none"></svg></div>
   <div class="card"><strong>Progreso por ejercicio</strong><div class="presc">Eleg&#237; un ejercicio para ver &#250;ltimo peso y mejor registro.</div><select id="exerciseSelect" style="width:100%;margin-top:10px;border:1px solid var(--line);border-radius:12px;padding:11px;font-size:16px;background:white"></select><div id="exerciseStats" style="margin-top:12px"></div></div>
+  <div class="card">
+    <strong>Evoluci&#243;n aer&#243;bica</strong>
+    <div class="presc">Compar&#225; tus sesiones seg&#250;n la actividad.</div>
+    <select id="cardioProgressSelect" style="width:100%;margin-top:10px;border:1px solid var(--line);border-radius:12px;padding:11px;font-size:16px;background:white">
+      <option value="walking">Caminata / cinta</option>
+      <option value="bike">Bicicleta</option>
+      <option value="elliptical">El&#237;ptico</option>
+      <option value="rower">Remo erg&#243;metro</option>
+      <option value="stairs">Escaladora / StairMaster</option>
+      <option value="other">Otro</option>
+    </select>
+    <div id="cardioProgressStats" style="margin-top:12px"></div>
+    <svg class="chart" id="cardioChart" viewBox="0 0 340 135" preserveAspectRatio="none"></svg>
+  </div>
   <div class="card"><strong>Adherencia</strong><div id="adherenceSummary" class="note"></div></div>
 </section>
 
@@ -220,9 +248,65 @@ function timerText(){document.getElementById("sessionTimer").textContent=String(
 document.getElementById("timerToggle").onclick=()=>{timerRunning=!timerRunning;document.getElementById("timerToggle").textContent=timerRunning?"Pausar":"Iniciar";if(timerRunning){timerInterval=setInterval(()=>{timerSeconds++;timerText()},1000)}else clearInterval(timerInterval)};
 document.getElementById("timerReset").onclick=()=>{timerRunning=false;clearInterval(timerInterval);timerSeconds=0;timerText();document.getElementById("timerToggle").textContent="Iniciar"};
 
+
+const cardioConfig={
+ walking:{label:"Caminata / cinta",fields:[
+  {key:"minutes",label:"Minutos",step:"1"},{key:"distanceKm",label:"Distancia km",step:"0.01"},
+  {key:"speedKmh",label:"Velocidad prom. km/h",step:"0.1"},{key:"inclinePct",label:"Inclinaci\u00f3n prom. %",step:"0.5"},
+  {key:"avgHr",label:"FC media",step:"1"}]},
+ bike:{label:"Bicicleta",fields:[
+  {key:"minutes",label:"Minutos",step:"1"},{key:"distanceKm",label:"Distancia km",step:"0.01"},
+  {key:"resistance",label:"Resistencia / nivel",step:"1"},{key:"avgWatts",label:"Watts promedio",step:"1"},
+  {key:"avgHr",label:"FC media",step:"1"}]},
+ elliptical:{label:"El\u00edptico",fields:[
+  {key:"minutes",label:"Minutos",step:"1"},{key:"distanceKm",label:"Distancia km",step:"0.01"},
+  {key:"resistance",label:"Resistencia / nivel",step:"1"},{key:"avgHr",label:"FC media",step:"1"}]},
+ rower:{label:"Remo erg\u00f3metro",fields:[
+  {key:"minutes",label:"Minutos",step:"1"},{key:"distanceM",label:"Distancia metros",step:"1"},
+  {key:"split500",label:"Ritmo /500 m (seg)",step:"1"},{key:"avgWatts",label:"Watts promedio",step:"1"},
+  {key:"avgHr",label:"FC media",step:"1"}]},
+ stairs:{label:"Escaladora / StairMaster",fields:[
+  {key:"minutes",label:"Minutos",step:"1"},{key:"floors",label:"Pisos / floors",step:"1"},
+  {key:"level",label:"Nivel promedio",step:"1"},{key:"avgHr",label:"FC media",step:"1"}]},
+ other:{label:"Otro",fields:[
+  {key:"minutes",label:"Minutos",step:"1"},{key:"distanceKm",label:"Distancia km (si aplica)",step:"0.01"},
+  {key:"avgHr",label:"FC media",step:"1"}]}
+};
+
+function renderCardioFields(){
+ const type=document.getElementById("cardioType").value,box=document.getElementById("cardioFields");
+ if(!type||!cardioConfig[type]){box.innerHTML="";return}
+ box.innerHTML=`<div class="grid2">${cardioConfig[type].fields.map(f=>`<label class="small">${f.label}<input data-cardio="${f.key}" type="number" min="0" step="${f.step}" inputmode="decimal" placeholder="\u2014"></label>`).join("")}</div>
+ <textarea id="cardioNotes" rows="2" placeholder="Notas de aer\u00f3bico: sensaciones, m\u00e1quina, etc."></textarea>`;
+}
+function readCardioData(){
+ const type=document.getElementById("cardioType").value;
+ if(!type||!cardioConfig[type])return null;
+ const metrics={};document.querySelectorAll("[data-cardio]").forEach(i=>{if(i.value!=="")metrics[i.dataset.cardio]=+i.value});
+ return{type,label:cardioConfig[type].label,metrics,notes:document.getElementById("cardioNotes")?.value||""};
+}
+function cardioMetricLabel(k){return({minutes:"min",distanceKm:"km",speedKmh:"km/h",inclinePct:"%",avgHr:"bpm",resistance:"nivel",avgWatts:"W",distanceM:"m",split500:"seg/500m",floors:"pisos",level:"nivel"})[k]||k}
+document.getElementById("cardioType").addEventListener("change",renderCardioFields);
+
+function cardioSessions(type){return state.sessions.filter(s=>s.type==="Gym"&&s.cardio&&s.cardio.type===type)}
+function renderCardioProgress(){
+ const type=document.getElementById("cardioProgressSelect").value,arr=cardioSessions(type),stats=document.getElementById("cardioProgressStats"),svg=document.getElementById("cardioChart");
+ if(!arr.length){stats.innerHTML='<div class="empty">Todav\u00eda no hay sesiones registradas de esta actividad.</div>';svg.innerHTML="";return}
+ const latest=arr.at(-1),mins=arr.map(s=>+(s.cardio.metrics?.minutes||0)).filter(Boolean),dist=arr.map(s=>+(s.cardio.metrics?.distanceKm||0)).filter(Boolean),watts=arr.map(s=>+(s.cardio.metrics?.avgWatts||0)).filter(Boolean),hr=arr.map(s=>+(s.cardio.metrics?.avgHr||0)).filter(Boolean);
+ stats.innerHTML=`<div class="grid3">
+ <div class="kpi"><span class="sub">Sesiones</span><strong>${arr.length}</strong><span class="sub">${cardioConfig[type].label}</span></div>
+ <div class="kpi"><span class="sub">\u00daltima</span><strong>${latest.cardio.metrics?.minutes||0} min</strong><span class="sub">${fmtDate(new Date(latest.date))}</span></div>
+ <div class="kpi"><span class="sub">Total</span><strong>${Math.round(mins.reduce((a,b)=>a+b,0))}</strong><span class="sub">minutos</span></div>
+ </div><div class="note" style="margin-top:10px">${dist.length?`Mejor distancia: <b>${Math.max(...dist)} km</b><br>`:""}${watts.length?`Mejor potencia media: <b>${Math.max(...watts)} W</b><br>`:""}${hr.length?`FC media promedio: <b>${Math.round(hr.reduce((a,b)=>a+b,0)/hr.length)} bpm</b>`:""}</div>`;
+ let key="minutes",label="minutos";if(["walking","bike","elliptical","other"].includes(type)&&dist.length){key="distanceKm";label="km"}if(type==="rower"){key="distanceM";label="m"}if(type==="stairs"){key="floors";label="pisos"}
+ const vals=arr.slice(-10).map(s=>+(s.cardio.metrics?.[key]||0)),max=Math.max(...vals,1),pts=vals.map((v,i)=>[15+i*(310/Math.max(vals.length-1,1)),115-(v/max)*90]);
+ svg.innerHTML='<line class="axis" x1="10" y1="115" x2="330" y2="115"/>'+`<polyline class="line" points="${pts.map(p=>p.join(",")).join(" ")}"/>`+pts.map((p,i)=>`<circle class="dot" cx="${p[0]}" cy="${p[1]}" r="4"/><text x="${p[0]-7}" y="130">${i+1}</text>`).join("")+`<text x="12" y="14">${label}</text>`;
+}
+document.getElementById("cardioProgressSelect").addEventListener("change",renderCardioProgress);
+
 function saveGym(){
  const ex=[];document.querySelectorAll("#gymExercises [data-exercise]").forEach((card,i)=>{const e=gymRoutine[currentDay][i],sets=[];card.querySelectorAll(".setrow").forEach((r,j)=>{const wi=r.querySelector("[data-weight]"),vi=r.querySelector("[data-value]"),di=r.querySelector("[data-done]"),weight=wi?wi.value:"",value=vi.value,done=di.checked;if(e.weighted&&weight!==""){state.lastWeights[e.name]=state.lastWeights[e.name]||{};state.lastWeights[e.name][j]=weight}sets.push({weight,value,done})});ex.push({name:e.name,sets})});
- state.sessions.push({id:Date.now(),date:new Date().toISOString(),type:"Gym",day:currentDay,feeling:gymFeeling,rpe:+document.getElementById("gymRpe").value||null,pain:+document.getElementById("gymPain").value||0,notes:document.getElementById("gymNotes").value,aerobic:document.getElementById("aerobic").checked,durationSec:timerSeconds,exercises:ex});
+ state.sessions.push({id:Date.now(),date:new Date().toISOString(),type:"Gym",day:currentDay,feeling:gymFeeling,rpe:+document.getElementById("gymRpe").value||null,pain:+document.getElementById("gymPain").value||0,notes:document.getElementById("gymNotes").value,aerobic:document.getElementById("aerobic").checked,cardio:readCardioData(),durationSec:timerSeconds,exercises:ex});
  saveState();renderStats();renderHistory();toast("Entrenamiento guardado \u2713");renderGym();
 }
 function saveMobility(){
@@ -245,14 +329,14 @@ function renderProgress(){
  document.getElementById("gymWeek").textContent=week.filter(s=>s.type==="Gym").length+"/3";document.getElementById("mobWeek").textContent=week.filter(s=>s.type==="Movilidad").length+"/3";document.getElementById("monthMinutes").textContent=Math.round(month.reduce((a,s)=>a+(s.durationSec||0),0)/60);
  const gym=state.sessions.filter(s=>s.type==="Gym").slice(-10),vals=gym.map(sessionVolume),svg=document.getElementById("volumeChart");
  if(!vals.length){svg.innerHTML='<text x="12" y="70">Todav\u00eda no hay datos de volumen.</text>'}else{const max=Math.max(...vals,1),pts=vals.map((v,i)=>[15+i*(310/Math.max(vals.length-1,1)),115-(v/max)*90]);svg.innerHTML='<line class="axis" x1="10" y1="115" x2="330" y2="115"/>'+`<polyline class="line" points="${pts.map(p=>p.join(",")).join(" ")}"/>`+pts.map((p,i)=>`<circle class="dot" cx="${p[0]}" cy="${p[1]}" r="4"/><text x="${p[0]-7}" y="130">${i+1}</text>`).join("")}
- renderExerciseStats();const total=week.length,gymN=week.filter(s=>s.type==="Gym").length,mobN=week.filter(s=>s.type==="Movilidad").length;document.getElementById("adherenceSummary").innerHTML=`Esta semana registraste <b>${total}</b> sesiones: <b>${gymN}</b> de gym y <b>${mobN}</b> de movilidad. Objetivo sugerido por la rutina: 3 d\u00edas de gym y al menos 3 sesiones de movilidad.`;
+ renderExerciseStats();renderCardioProgress();const total=week.length,gymN=week.filter(s=>s.type==="Gym").length,mobN=week.filter(s=>s.type==="Movilidad").length;document.getElementById("adherenceSummary").innerHTML=`Esta semana registraste <b>${total}</b> sesiones: <b>${gymN}</b> de gym y <b>${mobN}</b> de movilidad. Objetivo sugerido por la rutina: 3 d\u00edas de gym y al menos 3 sesiones de movilidad.`;
 }
 function fillExerciseSelect(){const names=[...new Set(Object.values(gymRoutine).flat().filter(e=>e.weighted).map(e=>e.name))];document.getElementById("exerciseSelect").innerHTML=names.map(n=>`<option>${n}</option>`).join("");document.getElementById("exerciseSelect").onchange=renderExerciseStats}
 function renderExerciseStats(){const sel=document.getElementById("exerciseSelect"),name=sel.value;if(!name)return;const hist=[];state.sessions.filter(s=>s.type==="Gym").forEach(s=>{const e=s.exercises?.find(x=>x.name===name);if(e){const done=e.sets?.filter(x=>x.done&&x.weight)||[];if(done.length)hist.push({date:s.date,max:Math.max(...done.map(x=>+x.weight||0)),volume:done.reduce((a,x)=>a+(+x.weight||0)*(+x.value||0),0)})}});const box=document.getElementById("exerciseStats");if(!hist.length){box.innerHTML='<div class="empty">Todav\u00eda no hay registros con peso para este ejercicio.</div>';return}const last=hist.at(-1),best=Math.max(...hist.map(x=>x.max));box.innerHTML=`<div class="grid3"><div class="kpi"><span class="sub">\u00daltimo peso</span><strong>${last.max} kg</strong><span class="sub">${fmtDate(new Date(last.date))}</span></div><div class="kpi"><span class="sub">Mejor peso</span><strong>${best} kg</strong><span class="sub">registrado</span></div><div class="kpi"><span class="sub">\u00dalt. volumen</span><strong>${Math.round(last.volume)}</strong><span class="sub">kg\u00b7reps</span></div></div>`}
 
 function sessionSummary(s){
  const lines=[`SLRP Training \u2014 ${s.type}${s.day?" \u00b7 D\u00eda "+s.day:""}`,new Date(s.date).toLocaleString("es-AR")];
- if(s.type==="Gym"){let d=0,t=0;(s.exercises||[]).forEach(e=>(e.sets||[]).forEach(x=>{t++;if(x.done)d++}));lines.push(`Series completadas: ${d}/${t}`);if(s.durationSec)lines.push(`Duraci\u00f3n: ${Math.round(s.durationSec/60)} min`);lines.push(`Aer\u00f3bico: ${s.aerobic?"S\u00ed":"No"}`);lines.push(`Volumen: ${Math.round(sessionVolume(s))} kg\u00b7reps`);(s.exercises||[]).forEach(e=>{const v=(e.sets||[]).filter(x=>x.done).map(x=>(x.weight?x.weight+" kg \u00d7 ":"")+x.value);if(v.length)lines.push(`${e.name}: ${v.join(" \u00b7 ")}`)})}else{const d=(s.exercises||[]).filter(x=>x.done).length;lines.push(`Ejercicios completados: ${d}/${s.exercises?.length||0}`)}
+ if(s.type==="Gym"){let d=0,t=0;(s.exercises||[]).forEach(e=>(e.sets||[]).forEach(x=>{t++;if(x.done)d++}));lines.push(`Series completadas: ${d}/${t}`);if(s.durationSec)lines.push(`Duraci\u00f3n: ${Math.round(s.durationSec/60)} min`);lines.push(`Aer\u00f3bico: ${s.aerobic?"S\u00ed":"No"}`);if(s.cardio){lines.push(`Cardio: ${s.cardio.label}`);const m=s.cardio.metrics||{};Object.keys(m).forEach(k=>lines.push(`  ${k}: ${m[k]} ${cardioMetricLabel(k)}`));if(s.cardio.notes)lines.push(`  Nota cardio: ${s.cardio.notes}`)}lines.push(`Volumen: ${Math.round(sessionVolume(s))} kg\u00b7reps`);(s.exercises||[]).forEach(e=>{const v=(e.sets||[]).filter(x=>x.done).map(x=>(x.weight?x.weight+" kg \u00d7 ":"")+x.value);if(v.length)lines.push(`${e.name}: ${v.join(" \u00b7 ")}`)})}else{const d=(s.exercises||[]).filter(x=>x.done).length;lines.push(`Ejercicios completados: ${d}/${s.exercises?.length||0}`)}
  if(s.feeling)lines.push(`Sensaci\u00f3n: ${s.feeling}`);if(s.rpe)lines.push(`RPE: ${s.rpe}/10`);if(s.pain!=null)lines.push(`Molestia/dolor: ${s.pain}/10`);if(s.notes)lines.push(`Notas: ${s.notes}`);return lines.join("\n")
 }
 function periodSummary(kind){const now=new Date(),arr=kind==="week"?state.sessions.filter(s=>new Date(s.date)>=startOfWeek(now)):state.sessions.filter(s=>sameMonth(new Date(s.date),now)),gym=arr.filter(s=>s.type==="Gym"),mob=arr.filter(s=>s.type==="Movilidad");const lines=[`SLRP Training \u2014 Resumen ${kind==="week"?"semanal":"mensual"}`,`Sesiones: ${arr.length} \u00b7 Gym ${gym.length} \u00b7 Movilidad ${mob.length}`,`Tiempo gym: ${Math.round(gym.reduce((a,s)=>a+(s.durationSec||0),0)/60)} min`,`Volumen: ${Math.round(gym.reduce((a,s)=>a+sessionVolume(s),0))} kg\u00b7reps`];[1,2,3].forEach(d=>{const n=gym.filter(s=>s.day===d).length;if(n)lines.push(`D\u00eda ${d}: ${n} sesi\u00f3n${n===1?"":"es"}`)});return lines.join("\n")}
@@ -264,7 +348,7 @@ document.getElementById("shareLast").onclick=()=>{const s=state.sessions.at(-1);
 
 document.getElementById("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="SLRP-Training-Backup.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
 
-renderGym();renderMobility();fillExerciseSelect();renderStats();renderHistory();saveState();
+renderGym();renderMobility();renderCardioFields();fillExerciseSelect();renderStats();renderHistory();saveState();
 </script>
 </body>
 </html>
