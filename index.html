@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="SLRP Training">
 <meta name="theme-color" content="#0b0b0c">
-<title>SLRP Training V3.2</title>
+<title>SLRP Training V3.3</title>
 <style>
 :root{--bg:#f3f3f5;--card:#fff;--text:#111;--muted:#707076;--line:#dedee3;--dark:#0c0c0d;--soft:#ececf0;--warn:#fff8e6;--warnline:#d5a72b;--good:#edf8ef}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html{scroll-behavior:smooth}
@@ -23,7 +23,7 @@ button.active,.primary{background:var(--dark);color:#fff;border-color:var(--dark
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.days{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:5px 0 9px}
 .row{display:flex;gap:8px;flex-wrap:wrap}.between{justify-content:space-between;align-items:center}.grow{flex:1;min-width:0}
 .exercise-title{font-size:18px;font-weight:800;line-height:1.15}.presc{font-size:13px;color:var(--muted);margin-top:4px}.note{font-size:13px;line-height:1.4;margin-top:7px}.tiny{font-size:11px;color:var(--muted)}
-.exercise-head{display:grid;grid-template-columns:1fr auto;gap:9px;align-items:start}.mediaRow{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.mediaRow .btn{min-height:38px;font-size:12px;padding:7px 9px}
+.exercise-head{display:grid;grid-template-columns:1fr auto;gap:9px;align-items:start}.mediaRow{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.mediaRow .btn{min-height:38px;font-size:12px;padding:7px 9px}.exactMedia{margin-top:10px}.exactMedia img{display:block;width:100%;max-height:260px;object-fit:contain;border-radius:14px;border:1px solid var(--line);background:#fff}.exactCaption{font-size:11px;color:var(--muted);margin-top:5px}.draftState{font-size:12px;color:var(--muted);margin-top:4px}
 .alt{margin-top:12px;padding:11px;border:1px dashed #c9c9cf;border-radius:14px;background:#fafafa}.alt summary{font-weight:800;cursor:pointer}.alt .presc{margin-top:5px}
 .sets{display:grid;gap:8px;margin-top:12px}.setrow{display:grid;grid-template-columns:52px 1fr 1fr 48px;gap:7px;align-items:end}.setrow.time{grid-template-columns:52px 1fr 48px}.setlabel{font-size:11px;color:var(--muted);align-self:center}
 label.small{font-size:10px;color:var(--muted)}input[type=number],input[type=text],textarea{width:100%;border:1px solid var(--line);border-radius:12px;background:#fff;padding:10px;font-size:16px;color:#111;outline:none}input:focus,textarea:focus{border-color:#888}input[type=checkbox]{width:23px;height:23px}.donebox{height:44px;border:1px solid var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;background:#fafafa}
@@ -60,10 +60,23 @@ label.small{font-size:10px;color:var(--muted)}input[type=number],input[type=text
 <button data-tab="share">Compartir</button>
 </nav>
 
+<div class="card timerCard" id="globalTimerCard">
+  <div>
+    <strong>Tiempo de entrenamiento</strong>
+    <div class="sub" id="timerStatus">Empieza autom&#225;ticamente cuando carg&#225;s el primer dato.</div>
+    <div class="draftState" id="draftStatus">Sin borrador activo.</div>
+  </div>
+  <div>
+    <div class="timer" id="sessionTimer">00:00</div>
+    <div class="row" style="justify-content:flex-end">
+      <button class="mini" id="discardDraft">Descartar borrador</button>
+    </div>
+  </div>
+</div>
+
 <section id="gym" class="panel active">
   <div class="days"><button class="day active" data-day="1">D&#237;a 1</button><button class="day" data-day="2">D&#237;a 2</button><button class="day" data-day="3">D&#237;a 3</button></div>
 
-  <div class="card timerCard"><div><strong>Tiempo de sesi&#243;n</strong><div class="sub">Se guarda con el entrenamiento.</div></div><div><div class="timer" id="sessionTimer">00:00</div><div class="row" style="justify-content:flex-end"><button class="mini" id="timerToggle">Iniciar</button><button class="mini" id="timerReset">Reset</button></div></div></div>
 
   <div class="card">
     <div class="row between"><strong>Progreso de hoy</strong><span id="gymProgressText">0%</span></div>
@@ -153,101 +166,59 @@ label.small{font-size:10px;color:var(--muted)}input[type=number],input[type=text
 </section>
 </div>
 
-<div class="footer"><div class="footer-inner"><button id="saveGym" class="primary">Guardar entrenamiento</button><button id="saveMob" class="primary hidden">Guardar movilidad</button><button id="quickShare">Compartir</button></div></div>
+<div class="footer"><div class="footer-inner"><button id="finishWorkout" class="primary">Finalizar entrenamiento</button><button id="quickShare">Compartir &#250;ltimo</button></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
-const STORAGE_KEY="slrp_training_v2"; // conserva los datos de V2
-let state=loadState(),currentDay=1,gymFeeling="",mobFeeling="";
-let timerSeconds=0,timerRunning=false,timerInterval=null;
+const STORAGE_KEY="slrp_training_v2";
+const DRAFT_KEY="slrp_training_draft_v33";
 
-const YT=q=>"https://www.youtube.com/results?search_query="+encodeURIComponent(q+" t\u00e9cnica ejercicio");
-const GS=q=>"https://www.google.com/search?tbm=isch&q="+encodeURIComponent(q+" ejercicio t\u00e9cnica");
+let state=loadState();
+let draft=loadDraft();
+let currentDay=Number(draft.currentDay||1);
+let timerInterval=null;
+
+const MOBILITY_IMAGES={
+  lumbar:"data:image/webp;base64,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",
+  hip:"data:image/webp;base64,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",
+  transverse:"data:image/webp;base64,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",
+  catcow:"data:image/webp;base64,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",
+  thoracic:"data:image/webp;base64,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"
+};
 
 const gymRoutine={
 1:[
-{name:"Remo bajo para dorsales",p:"12 reps \u00d7 3 series",sets:[12,12,12],weighted:true,media:"seated cable row",alt:"Remo sentado con banda el\u00e1stica",altWhy:"Mismo patr\u00f3n de tracci\u00f3n horizontal para espalda y brazos.",altMedia:"seated resistance band row"},
-{name:"Press banco inclinado",p:"10 reps \u00d7 3 series",sets:[10,10,10],weighted:true,n:"Con mancuerna o multipower",media:"incline dumbbell press",alt:"Press inclinado en m\u00e1quina",altWhy:"Mismo patr\u00f3n de empuje para pecho y tr\u00edceps con m\u00e1s estabilidad.",altMedia:"incline chest press machine"},
-{name:"Dorsalera",p:"12 reps \u00d7 3 series",sets:[12,12,12],weighted:true,media:"lat pulldown",alt:"Jal\u00f3n con banda desde arriba",altWhy:"Mismo patr\u00f3n de tracci\u00f3n vertical para dorsales.",altMedia:"resistance band lat pulldown"},
-{name:"B\u00edceps bilateral sentado",p:"12 reps + 10 reps \u00d7 2 series",sets:[12,10,10],weighted:true,media:"seated dumbbell biceps curl",alt:"Curl martillo sentado",altWhy:"Trabaja flexores del codo con agarre neutro.",altMedia:"seated hammer curl"},
-{name:"Plancha frontal",p:"30 segundos \u00d7 2 series",sets:[30,30],time:true,media:"front plank",alt:"Dead bug",altWhy:"Alternativa de control del tronco y anti-extensi\u00f3n con apoyo lumbar.",altMedia:"dead bug exercise"},
-{name:"Pallof",p:"20 segundos por lado \u00d7 2 series",sets:[20,20],time:true,side:true,media:"Pallof press",video:"https://www.youtube.com/shorts/uadHuIgQoK8",alt:"Pallof isom\u00e9trico con banda",altWhy:"Mismo objetivo de anti-rotaci\u00f3n con resistencia el\u00e1stica.",altMedia:"Pallof hold resistance band"}
+{name:"Remo bajo para dorsales",p:"12 reps \u00d7 3 series",sets:[12,12,12],weighted:true,alt:"Remo sentado con banda el\u00e1stica",altWhy:"Mismo patr\u00f3n de tracci\u00f3n horizontal para espalda y brazos."},
+{name:"Press banco inclinado",p:"10 reps \u00d7 3 series",sets:[10,10,10],weighted:true,n:"Con mancuerna o multipower",alt:"Press inclinado en m\u00e1quina",altWhy:"Mismo patr\u00f3n de empuje para pecho y tr\u00edceps con m\u00e1s estabilidad."},
+{name:"Dorsalera",p:"12 reps \u00d7 3 series",sets:[12,12,12],weighted:true,alt:"Jal\u00f3n con banda desde arriba",altWhy:"Mismo patr\u00f3n de tracci\u00f3n vertical para dorsales."},
+{name:"B\u00edceps bilateral sentado",p:"12 reps + 10 reps \u00d7 2 series",sets:[12,10,10],weighted:true,alt:"Curl martillo sentado",altWhy:"Trabaja flexores del codo con agarre neutro."},
+{name:"Plancha frontal",p:"30 segundos \u00d7 2 series",sets:[30,30],time:true,alt:"Dead bug",altWhy:"Alternativa de control del tronco y anti-extensi\u00f3n con apoyo lumbar."},
+{name:"Pallof",p:"20 segundos por lado \u00d7 2 series",sets:[20,20],time:true,side:true,video:"https://www.youtube.com/shorts/uadHuIgQoK8",alt:"Pallof isom\u00e9trico con banda",altWhy:"Mismo objetivo de anti-rotaci\u00f3n con resistencia el\u00e1stica."}
 ],
 2:[
-{name:"Sentadillas con mancuerna",p:"12 reps + 10 reps \u00d7 2 series",sets:[12,10,10],weighted:true,n:"Apoy\u00e1ndose en banco",media:"goblet squat to bench",alt:"Sit-to-stand con mancuerna",altWhy:"Mismo patr\u00f3n de sentarse/pararse con referencia del banco.",altMedia:"weighted sit to stand bench"},
-{name:"Abductores",p:"12 reps \u00d7 3 series",sets:[12,12,12],weighted:true,n:"Separar las piernas",media:"hip abduction machine",alt:"Abducci\u00f3n de cadera acostado de lado",altWhy:"Trabaja abductores de cadera sin m\u00e1quina.",altMedia:"side lying hip abduction"},
-{name:"Vuelos laterales",p:"10 reps \u00d7 3 series",sets:[10,10,10],weighted:true,media:"dumbbell lateral raise",alt:"Elevaci\u00f3n lateral unilateral en polea",altWhy:"Mismo foco principal en deltoides lateral con tensi\u00f3n continua.",altMedia:"single arm cable lateral raise"},
-{name:"Press militar sentado",p:"12 reps \u00d7 3 series",sets:[12,12,12],weighted:true,media:"seated dumbbell shoulder press",alt:"Press de hombros en m\u00e1quina",altWhy:"Mismo patr\u00f3n de empuje vertical con respaldo estable.",altMedia:"seated shoulder press machine"},
-{name:"Plancha frontal",p:"30 segundos \u00d7 2 series",sets:[30,30],time:true,media:"front plank",alt:"Dead bug",altWhy:"Control del tronco con menor demanda de apoyo de hombros.",altMedia:"dead bug exercise"},
-{name:"Plancha lateral corta",p:"20 segundos por lado \u00d7 2 series",sets:[20,20],time:true,side:true,media:"short side plank knees",alt:"Plancha lateral en pared",altWhy:"Mismo objetivo de estabilidad lateral con menor carga.",altMedia:"wall side plank"}
+{name:"Sentadillas con mancuerna",p:"12 reps + 10 reps \u00d7 2 series",sets:[12,10,10],weighted:true,n:"Apoy\u00e1ndose en banco",alt:"Sit-to-stand con mancuerna",altWhy:"Mismo patr\u00f3n de sentarse/pararse con referencia del banco."},
+{name:"Abductores",p:"12 reps \u00d7 3 series",sets:[12,12,12],weighted:true,n:"Separar las piernas",alt:"Abducci\u00f3n de cadera acostado de lado",altWhy:"Trabaja abductores de cadera sin m\u00e1quina."},
+{name:"Vuelos laterales",p:"10 reps \u00d7 3 series",sets:[10,10,10],weighted:true,alt:"Elevaci\u00f3n lateral unilateral en polea",altWhy:"Mismo foco principal en deltoides lateral con tensi\u00f3n continua."},
+{name:"Press militar sentado",p:"12 reps \u00d7 3 series",sets:[12,12,12],weighted:true,alt:"Press de hombros en m\u00e1quina",altWhy:"Mismo patr\u00f3n de empuje vertical con respaldo estable."},
+{name:"Plancha frontal",p:"30 segundos \u00d7 2 series",sets:[30,30],time:true,alt:"Dead bug",altWhy:"Control del tronco con menor demanda de apoyo de hombros."},
+{name:"Plancha lateral corta",p:"20 segundos por lado \u00d7 2 series",sets:[20,20],time:true,side:true,alt:"Plancha lateral en pared",altWhy:"Mismo objetivo de estabilidad lateral con menor carga."}
 ],
 3:[
-{name:"Peso muerto con mancuerna",p:"8 reps \u00d7 4 series",sets:[8,8,8,8],weighted:true,n:"POCO PESO \u00b7 muy t\u00e9cnico",important:true,media:"dumbbell deadlift hip hinge",video:"https://www.youtube.com/watch?v=x7W2BOKWWKs",alt:"Pull-through en polea",altWhy:"Patr\u00f3n dominante de cadera con carga guiada. Usar s\u00f3lo si tu kinesi\u00f3logo lo aprueba.",altMedia:"cable pull through"},
-{name:"Remo bajo",p:"10 reps \u00d7 3 series",sets:[10,10,10],weighted:true,n:"M\u00e1s peso que D\u00eda 1",media:"seated cable row",alt:"Remo sentado con banda el\u00e1stica",altWhy:"Mismo patr\u00f3n de tracci\u00f3n horizontal.",altMedia:"seated resistance band row"},
-{name:"Puente gl\u00fateo",p:"10 reps \u00d7 3 series",sets:[10,10,10],weighted:true,n:"Peso moderado. Hacerlo lento y con buena t\u00e9cnica.",media:"weighted glute bridge",alt:"Hip thrust en banco",altWhy:"Extensi\u00f3n de cadera con \u00e9nfasis en gl\u00fateos.",altMedia:"hip thrust bench"},
-{name:"Bird-dog",p:"8 repeticiones por lado \u00d7 2 series",sets:[8,8],side:true,media:"bird dog exercise",video:"https://www.youtube.com/shorts/Tjo5oYHoS8M",alt:"Dead bug contralateral",altWhy:"Control lumbo-p\u00e9lvico contralateral en posici\u00f3n supina.",altMedia:"contralateral dead bug"},
-{name:"Plancha frontal",p:"30 segundos \u00d7 2 series",sets:[30,30],time:true,media:"front plank",alt:"Dead bug",altWhy:"Control de core con apoyo lumbar.",altMedia:"dead bug exercise"},
-{name:"Pallof",p:"20 segundos por lado \u00d7 2 series",sets:[20,20],time:true,side:true,media:"Pallof press",alt:"Pallof isom\u00e9trico con banda",altWhy:"Mismo objetivo de anti-rotaci\u00f3n.",altMedia:"Pallof hold resistance band"}
+{name:"Peso muerto con mancuerna",p:"8 reps \u00d7 4 series",sets:[8,8,8,8],weighted:true,n:"POCO PESO \u00b7 muy t\u00e9cnico",important:true,video:"https://www.youtube.com/watch?v=x7W2BOKWWKs",alt:"Pull-through en polea",altWhy:"Patr\u00f3n dominante de cadera con carga guiada. Usar s\u00f3lo si tu kinesi\u00f3logo lo aprueba."},
+{name:"Remo bajo",p:"10 reps \u00d7 3 series",sets:[10,10,10],weighted:true,n:"M\u00e1s peso que D\u00eda 1",alt:"Remo sentado con banda el\u00e1stica",altWhy:"Mismo patr\u00f3n de tracci\u00f3n horizontal."},
+{name:"Puente gl\u00fateo",p:"10 reps \u00d7 3 series",sets:[10,10,10],weighted:true,n:"Peso moderado. Hacerlo lento y con buena t\u00e9cnica.",alt:"Hip thrust en banco",altWhy:"Extensi\u00f3n de cadera con \u00e9nfasis en gl\u00fateos."},
+{name:"Bird-dog",p:"8 repeticiones por lado \u00d7 2 series",sets:[8,8],side:true,video:"https://www.youtube.com/shorts/Tjo5oYHoS8M",alt:"Dead bug contralateral",altWhy:"Control lumbo-p\u00e9lvico contralateral en posici\u00f3n supina."},
+{name:"Plancha frontal",p:"30 segundos \u00d7 2 series",sets:[30,30],time:true,alt:"Dead bug",altWhy:"Control de core con apoyo lumbar."},
+{name:"Pallof",p:"20 segundos por lado \u00d7 2 series",sets:[20,20],time:true,side:true,alt:"Pallof isom\u00e9trico con banda",altWhy:"Mismo objetivo de anti-rotaci\u00f3n."}
 ]};
 
 const mobilityRoutine=[
-{name:"Movilidad de columna lumbar",p:"12 movimientos por lado",media:"supine lumbar rotation knees side to side",alt:"Basculaci\u00f3n p\u00e9lvica supina",altWhy:"Movimiento suave de pelvis/columna lumbar.",altMedia:"supine pelvic tilt"},
-{name:"Movilidad cadera \u2013 columna",p:"10 movimientos por lado \u00d7 2 series",media:"supine figure 4 hip rotation mobility",alt:"90/90 de cadera asistido",altWhy:"Movilidad de cadera con control del tronco.",altMedia:"90 90 hip mobility assisted"},
-{name:"Activaci\u00f3n del transverso del abdomen",p:"12 repeticiones \u00d7 2 series",n:"Boca arriba: empujar la zona baja de la espalda contra el piso al sacar el aire. El ombligo desciende hacia el suelo.",media:"transverse abdominis activation breathing",alt:"Dead bug respiratorio",altWhy:"Combina respiraci\u00f3n y control lumbo-p\u00e9lvico.",altMedia:"dead bug breathing core"},
-{name:"Gato bueno / gato malo",p:"10 repeticiones \u00d7 2 series",media:"cat cow exercise",alt:"Rock-back en cuadrupedia",altWhy:"Movilidad suave en cuadrupedia manteniendo control de columna.",altMedia:"quadruped rock back mobility"},
-{name:"Movilidad tor\u00e1cica",p:"10 veces por lado",n:"A cuatro patas: deslizar un brazo por el suelo, bajar el hombro y luego abrir hacia el techo mirando la mano.",media:"thread the needle thoracic rotation",alt:"Open book acostado de lado",altWhy:"Rotaci\u00f3n tor\u00e1cica con pelvis estable.",altMedia:"open book thoracic rotation"}
+{name:"Movilidad de columna lumbar",p:"12 movimientos por lado",image:MOBILITY_IMAGES.lumbar,alt:"Basculaci\u00f3n p\u00e9lvica supina",altWhy:"Movimiento suave de pelvis/columna lumbar."},
+{name:"Movilidad cadera - columna",p:"10 movimientos por lado \u00d7 2 series",image:MOBILITY_IMAGES.hip,alt:"90/90 de cadera asistido",altWhy:"Movilidad de cadera con control del tronco."},
+{name:"Activaci\u00f3n del transverso del abdomen",p:"12 repeticiones \u00d7 2 series",n:"Boca arriba: empujar la zona baja de la espalda contra el piso al sacar el aire. El ombligo desciende hacia el suelo.",image:MOBILITY_IMAGES.transverse,alt:"Dead bug respiratorio",altWhy:"Combina respiraci\u00f3n y control lumbo-p\u00e9lvico."},
+{name:"Gato bueno / gato malo",p:"10 repeticiones \u00d7 2 series",image:MOBILITY_IMAGES.catcow,alt:"Rock-back en cuadrupedia",altWhy:"Movilidad suave en cuadrupedia manteniendo control de columna."},
+{name:"Movilidad tor\u00e1cica",p:"10 veces por lado",n:"A cuatro patas: deslizar un brazo por el suelo, bajar el hombro y luego abrir hacia el techo mirando la mano.",image:MOBILITY_IMAGES.thoracic,alt:"Open book acostado de lado",altWhy:"Rotaci\u00f3n tor\u00e1cica con pelvis estable."}
 ];
-
-function loadState(){try{const s=localStorage.getItem(STORAGE_KEY);if(s){const o=JSON.parse(s);o.sessions=o.sessions||[];o.lastWeights=o.lastWeights||{};return o}}catch(e){}return{sessions:[],lastWeights:{}}}
-function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state));document.getElementById("saveStatus").textContent="\u25cf Guardado"}
-function toast(t){const e=document.getElementById("toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),1600)}
-function fmtDate(d){return new Intl.DateTimeFormat("es-AR",{day:"2-digit",month:"2-digit",year:"2-digit"}).format(d)}
-function startOfWeek(d){const r=new Date(d),x=(r.getDay()+6)%7;r.setHours(0,0,0,0);r.setDate(r.getDate()-x);return r}
-function sameMonth(a,b){return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()}
-function lastWeight(name,i){return state.lastWeights[name]?.[i]??""}
-function lastGymDay(day){return [...state.sessions].reverse().find(s=>s.type==="Gym"&&s.day===day)}
-
-document.getElementById("todayText").textContent=new Intl.DateTimeFormat("es-AR",{weekday:"long",day:"numeric",month:"long"}).format(new Date());
-document.getElementById("currentWeekLabel").textContent="Semana "+Math.ceil((((new Date())-new Date(new Date().getFullYear(),0,1))/86400000+new Date(new Date().getFullYear(),0,1).getDay()+1)/7);
-
-document.querySelectorAll("[data-tab]").forEach(b=>b.addEventListener("click",()=>switchTab(b.dataset.tab,b)));
-function switchTab(tab,b){document.querySelectorAll("[data-tab]").forEach(x=>x.classList.toggle("active",x===b));document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active",p.id===tab));document.getElementById("saveGym").classList.toggle("hidden",tab!=="gym");document.getElementById("saveMob").classList.toggle("hidden",tab!=="mob");if(tab==="progress")renderProgress()}
-
-document.querySelectorAll(".day").forEach(b=>b.addEventListener("click",()=>{currentDay=+b.dataset.day;document.querySelectorAll(".day").forEach(x=>x.classList.toggle("active",x===b));renderGym()}));
-
-function mediaButtons(e){
-  const video=e.video||YT(e.media||e.name);
-  return `<div class="mediaRow"><a class="btn" href="${video}" target="_blank" rel="noopener">\u25b6\ufe0e Video t\u00e9cnica</a><a class="btn" href="${GS(e.media||e.name)}" target="_blank" rel="noopener">\u25a7 Fotos</a></div>`;
-}
-function altBox(e){
-  return `<details class="alt"><summary>Alternativa sugerida</summary><div class="exercise-title" style="font-size:15px;margin-top:8px">${e.alt}</div><div class="presc">${e.altWhy}</div><div class="tiny" style="margin-top:6px">No reemplazar el ejercicio indicado sin aprobaci\u00f3n de tu kinesi\u00f3logo.</div><div class="mediaRow"><a class="btn" href="${YT(e.altMedia||e.alt)}" target="_blank">\u25b6\ufe0e Video alternativa</a><a class="btn" href="${GS(e.altMedia||e.alt)}" target="_blank">\u25a7 Fotos</a></div></details>`;
-}
-function renderGym(){
- const c=document.getElementById("gymExercises"),last=lastGymDay(currentDay);
- document.getElementById("lastSessionHint").textContent=last?`\u00daltima vez: ${fmtDate(new Date(last.date))}${last.durationSec?` \u00b7 ${Math.round(last.durationSec/60)} min`:''}`:"Todav\u00eda no registraste este d\u00eda.";
- c.innerHTML=gymRoutine[currentDay].map((e,i)=>{
-   const rows=e.sets.map((t,j)=>e.weighted?
-   `<div class="setrow"><div class="setlabel">Serie ${j+1}</div><label class="small">Peso kg<input type="number" step=".5" min="0" inputmode="decimal" data-weight="${j}" value="${lastWeight(e.name,j)}" placeholder="\u2014"></label><label class="small">Reps<input type="number" min="0" inputmode="numeric" data-value="${j}" value="${t}"></label><label class="donebox"><input type="checkbox" data-done="${j}"></label></div>`:
-   `<div class="setrow time"><div class="setlabel">Serie ${j+1}</div><label class="small">${e.time?"Segundos":"Reps"}<input type="number" min="0" inputmode="numeric" data-value="${j}" value="${t}"></label><label class="donebox"><input type="checkbox" data-done="${j}"></label></div>`).join("");
-   let previous="";
-   if(last){const old=last.exercises?.find(x=>x.name===e.name);if(old){const vals=old.sets?.filter(x=>x.done).map(x=>(x.weight?`${x.weight}kg \u00d7 `:"")+x.value);if(vals?.length)previous=`<div class="tiny" style="margin-top:8px">\u00daltima vez: ${vals.join(" \u00b7 ")}</div>`}}
-   return `<article class="card ${e.important?"warning":""}" data-exercise="${i}"><div class="exercise-head"><div><div class="exercise-title">${i+1}. ${e.name}</div><div class="presc">${e.p}</div>${e.n?`<div class="note">${e.n}</div>`:""}${previous}</div></div>${mediaButtons(e)}<div class="sets">${rows}</div>${altBox(e)}</article>`;
- }).join("");
- c.querySelectorAll("input").forEach(x=>x.addEventListener("change",updateProgress));updateProgress();
-}
-function updateProgress(){const b=[...document.querySelectorAll("#gymExercises [data-done]")],d=b.filter(x=>x.checked).length,p=b.length?Math.round(d/b.length*100):0;document.getElementById("gymProgress").style.width=p+"%";document.getElementById("gymProgressText").textContent=p+"%"}
-
-function renderMobility(){
- document.getElementById("mobExercises").innerHTML=mobilityRoutine.map((e,i)=>`<div class="card"><label class="mobrow"><input type="checkbox" data-mob="${i}"><span><span class="exercise-title">${i+1}. ${e.name}</span><span class="presc" style="display:block">${e.p}</span>${e.n?`<span class="note" style="display:block">${e.n}</span>`:""}</span></label>${mediaButtons(e)}${altBox(e)}</div>`).join("");
-}
-
-document.querySelectorAll("#gymFeelings button").forEach(b=>b.onclick=()=>{gymFeeling=b.dataset.feel;document.querySelectorAll("#gymFeelings button").forEach(x=>x.classList.toggle("active",x===b))});
-document.querySelectorAll("#mobFeelings button").forEach(b=>b.onclick=()=>{mobFeeling=b.dataset.feel;document.querySelectorAll("#mobFeelings button").forEach(x=>x.classList.toggle("active",x===b))});
-
-function timerText(){document.getElementById("sessionTimer").textContent=String(Math.floor(timerSeconds/60)).padStart(2,"0")+":"+String(timerSeconds%60).padStart(2,"0")}
-document.getElementById("timerToggle").onclick=()=>{timerRunning=!timerRunning;document.getElementById("timerToggle").textContent=timerRunning?"Pausar":"Iniciar";if(timerRunning){timerInterval=setInterval(()=>{timerSeconds++;timerText()},1000)}else clearInterval(timerInterval)};
-document.getElementById("timerReset").onclick=()=>{timerRunning=false;clearInterval(timerInterval);timerSeconds=0;timerText();document.getElementById("timerToggle").textContent="Iniciar"};
-
 
 const cardioConfig={
  walking:{label:"Caminata / cinta",fields:[
@@ -273,82 +244,432 @@ const cardioConfig={
   {key:"avgHr",label:"FC media",step:"1"}]}
 };
 
+function loadState(){
+  try{const s=localStorage.getItem(STORAGE_KEY);if(s){const o=JSON.parse(s);o.sessions=o.sessions||[];o.lastWeights=o.lastWeights||{};return o}}catch(e){}
+  return{sessions:[],lastWeights:{}};
+}
+function saveState(){
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
+}
+function loadDraft(){
+  try{const s=localStorage.getItem(DRAFT_KEY);if(s){const o=JSON.parse(s);o.fields=o.fields||{};return o}}catch(e){}
+  return{fields:{},startedAt:null,updatedAt:null,currentDay:1};
+}
+function saveDraft(show=true){
+  draft.updatedAt=Date.now();
+  localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));
+  if(show) updateDraftStatus();
+}
+function clearDraft(){
+  draft={fields:{},startedAt:null,updatedAt:null,currentDay:1};
+  localStorage.removeItem(DRAFT_KEY);
+  currentDay=1;
+}
+function toast(t){
+  const e=document.getElementById("toast");
+  e.textContent=t;e.classList.add("show");
+  setTimeout(()=>e.classList.remove("show"),1600);
+}
+function fmtDate(d){return new Intl.DateTimeFormat("es-AR",{day:"2-digit",month:"2-digit",year:"2-digit"}).format(d)}
+function startOfWeek(d){const r=new Date(d),x=(r.getDay()+6)%7;r.setHours(0,0,0,0);r.setDate(r.getDate()-x);return r}
+function sameMonth(a,b){return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()}
+function lastWeight(name,i){return state.lastWeights[name]?.[i]??""}
+function lastGymDay(day){return [...state.sessions].reverse().find(s=>s.type==="Gym"&&s.day===day)}
+function draftVal(key,fallback=""){return Object.prototype.hasOwnProperty.call(draft.fields,key)?draft.fields[key]:fallback}
+function ensureTimerStarted(){
+  if(!draft.startedAt){
+    draft.startedAt=Date.now();
+    saveDraft();
+    renderTimer();
+  }
+}
+function setDraftField(key,value,startTimer=true){
+  if(startTimer) ensureTimerStarted();
+  draft.fields[key]=value;
+  saveDraft();
+}
+function fieldHasValue(v){
+  return v===true || (v!==false && v!==null && v!==undefined && String(v)!=="");
+}
+
+function renderTimer(){
+  const sec=draft.startedAt?Math.max(0,Math.floor((Date.now()-draft.startedAt)/1000)):0;
+  document.getElementById("sessionTimer").textContent=String(Math.floor(sec/60)).padStart(2,"0")+":"+String(sec%60).padStart(2,"0");
+  document.getElementById("timerStatus").textContent=draft.startedAt?"Sesi\u00f3n en curso. El reloj sigue aunque cambies de pantalla o cierres la app.":"Empieza autom\u00e1ticamente cuando carg\u00e1s el primer dato.";
+}
+function updateDraftStatus(){
+  const el=document.getElementById("draftStatus");
+  const top=document.getElementById("saveStatus");
+  if(draft.updatedAt){
+    const t=new Date(draft.updatedAt).toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"});
+    el.textContent="Borrador guardado autom\u00e1ticamente a las "+t+".";
+    top.textContent="\u25cf Borrador guardado";
+  }else{
+    el.textContent="Sin borrador activo.";
+    top.textContent="\u25cf Guardado";
+  }
+}
+
+document.getElementById("todayText").textContent=new Intl.DateTimeFormat("es-AR",{weekday:"long",day:"numeric",month:"long"}).format(new Date());
+document.getElementById("currentWeekLabel").textContent="Semana "+Math.ceil((((new Date())-new Date(new Date().getFullYear(),0,1))/86400000+new Date(new Date().getFullYear(),0,1).getDay()+1)/7);
+
+document.querySelectorAll("[data-tab]").forEach(b=>b.addEventListener("click",()=>switchTab(b.dataset.tab,b)));
+function switchTab(tab,b){
+  document.querySelectorAll("[data-tab]").forEach(x=>x.classList.toggle("active",x===b));
+  document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active",p.id===tab));
+  if(tab==="progress")renderProgress();
+}
+
+document.querySelectorAll(".day").forEach(b=>b.addEventListener("click",()=>{
+  currentDay=+b.dataset.day;
+  draft.currentDay=currentDay;
+  saveDraft(false);
+  syncDayButtons();
+  renderGym();
+}));
+function syncDayButtons(){
+  document.querySelectorAll(".day").forEach(x=>x.classList.toggle("active",Number(x.dataset.day)===currentDay));
+}
+
+function exactMedia(e){
+  let html="";
+  if(e.image) html+=`<div class="exactMedia"><img src="${e.image}" alt="Referencia original de ${e.name}"><div class="exactCaption">Referencia original incluida por tu kinesi\u00f3logo.</div></div>`;
+  if(e.video) html+=`<div class="mediaRow"><a class="btn" href="${e.video}" target="_blank" rel="noopener">\u25b6\ufe0e Video del kinesi\u00f3logo</a></div>`;
+  if(!e.image&&!e.video) html+=`<div class="tiny" style="margin-top:9px">Sin foto/video mostrado: elimin\u00e9 las referencias gen\u00e9ricas para no ense\u00f1arte una variante distinta a la indicada.</div>`;
+  return html;
+}
+function altBox(e){
+  if(!e.alt)return "";
+  return `<details class="alt"><summary>Alternativa sugerida</summary><div class="exercise-title" style="font-size:15px;margin-top:8px">${e.alt}</div><div class="presc">${e.altWhy}</div><div class="tiny" style="margin-top:6px">No reemplazar el ejercicio indicado sin aprobaci\u00f3n de tu kinesi\u00f3logo. Quit\u00e9 los videos gen\u00e9ricos de las alternativas para evitar variantes incorrectas.</div></details>`;
+}
+
+function renderGym(){
+  const c=document.getElementById("gymExercises"),last=lastGymDay(currentDay);
+  document.getElementById("lastSessionHint").textContent=last?`\u00daltima vez: ${fmtDate(new Date(last.date))}${last.durationSec?` \u00b7 ${Math.round(last.durationSec/60)} min`:""}`:"Todav\u00eda no registraste este d\u00eda.";
+  c.innerHTML=gymRoutine[currentDay].map((e,i)=>{
+    const rows=e.sets.map((target,j)=>{
+      const prefix=`gym.d${currentDay}.e${i}.s${j}`;
+      const value=draftVal(prefix+".value",target);
+      const done=draftVal(prefix+".done",false)===true;
+      if(e.weighted){
+        const weight=draftVal(prefix+".weight",lastWeight(e.name,j));
+        return `<div class="setrow"><div class="setlabel">Serie ${j+1}</div>
+          <label class="small">Peso kg<input data-draft-key="${prefix}.weight" type="number" step=".5" min="0" inputmode="decimal" value="${weight}" placeholder="\u2014"></label>
+          <label class="small">Reps<input data-draft-key="${prefix}.value" type="number" min="0" inputmode="numeric" value="${value}"></label>
+          <label class="donebox"><input data-draft-key="${prefix}.done" type="checkbox" ${done?"checked":""}></label></div>`;
+      }
+      return `<div class="setrow time"><div class="setlabel">Serie ${j+1}</div>
+        <label class="small">${e.time?"Segundos":"Reps"}<input data-draft-key="${prefix}.value" type="number" min="0" inputmode="numeric" value="${value}"></label>
+        <label class="donebox"><input data-draft-key="${prefix}.done" type="checkbox" ${done?"checked":""}></label></div>`;
+    }).join("");
+    let previous="";
+    if(last){
+      const old=last.exercises?.find(x=>x.name===e.name);
+      if(old){
+        const vals=old.sets?.filter(x=>x.done).map(x=>(x.weight?`${x.weight}kg \u00d7 `:"")+x.value);
+        if(vals?.length)previous=`<div class="tiny" style="margin-top:8px">\u00daltima vez: ${vals.join(" \u00b7 ")}</div>`;
+      }
+    }
+    return `<article class="card ${e.important?"warning":""}" data-exercise="${i}">
+      <div class="exercise-head"><div><div class="exercise-title">${i+1}. ${e.name}</div><div class="presc">${e.p}</div>${e.n?`<div class="note">${e.n}</div>`:""}${previous}</div></div>
+      ${exactMedia(e)}<div class="sets">${rows}</div>${altBox(e)}</article>`;
+  }).join("");
+  updateProgress();
+}
+
+function renderMobility(){
+  document.getElementById("mobExercises").innerHTML=mobilityRoutine.map((e,i)=>{
+    const key=`mob.e${i}.done`;
+    const checked=draftVal(key,false)===true;
+    return `<div class="card"><label class="mobrow"><input type="checkbox" data-draft-key="${key}" ${checked?"checked":""}><span>
+      <span class="exercise-title">${i+1}. ${e.name}</span><span class="presc" style="display:block">${e.p}</span>${e.n?`<span class="note" style="display:block">${e.n}</span>`:""}</span></label>
+      ${exactMedia(e)}${altBox(e)}</div>`;
+  }).join("");
+}
+
+function updateProgress(){
+  const boxes=[...document.querySelectorAll("#gymExercises input[type=checkbox][data-draft-key]")];
+  const done=boxes.filter(x=>x.checked).length,p=boxes.length?Math.round(done/boxes.length*100):0;
+  document.getElementById("gymProgress").style.width=p+"%";
+  document.getElementById("gymProgressText").textContent=p+"%";
+}
+
+function restoreStaticDraft(){
+  const map={
+    gymRpe:"gym.rpe",gymPain:"gym.pain",gymNotes:"gym.notes",aerobic:"gym.aerobic",
+    mobPain:"mob.pain",mobNotes:"mob.notes",cardioType:"cardio.type"
+  };
+  Object.entries(map).forEach(([id,key])=>{
+    const el=document.getElementById(id);if(!el)return;
+    el.dataset.draftKey=key;
+    const v=draftVal(key,el.type==="checkbox"?false:"");
+    if(el.type==="checkbox")el.checked=v===true;else el.value=v;
+  });
+  const gf=draftVal("gym.feeling",""),mf=draftVal("mob.feeling","");
+  document.querySelectorAll("#gymFeelings button").forEach(b=>b.classList.toggle("active",b.dataset.feel===gf));
+  document.querySelectorAll("#mobFeelings button").forEach(b=>b.classList.toggle("active",b.dataset.feel===mf));
+}
+
 function renderCardioFields(){
- const type=document.getElementById("cardioType").value,box=document.getElementById("cardioFields");
- if(!type||!cardioConfig[type]){box.innerHTML="";return}
- box.innerHTML=`<div class="grid2">${cardioConfig[type].fields.map(f=>`<label class="small">${f.label}<input data-cardio="${f.key}" type="number" min="0" step="${f.step}" inputmode="decimal" placeholder="\u2014"></label>`).join("")}</div>
- <textarea id="cardioNotes" rows="2" placeholder="Notas de aer\u00f3bico: sensaciones, m\u00e1quina, etc."></textarea>`;
+  const type=document.getElementById("cardioType").value,box=document.getElementById("cardioFields");
+  if(!type||!cardioConfig[type]){box.innerHTML="";return}
+  box.innerHTML=`<div class="grid2">${cardioConfig[type].fields.map(f=>{
+    const key=`cardio.${type}.${f.key}`;
+    return `<label class="small">${f.label}<input data-draft-key="${key}" type="number" min="0" step="${f.step}" inputmode="decimal" value="${draftVal(key,"")}" placeholder="\u2014"></label>`;
+  }).join("")}</div>
+  <textarea data-draft-key="cardio.${type}.notes" id="cardioNotes" rows="2" placeholder="Notas de aer\u00f3bico: sensaciones, m\u00e1quina, etc.">${draftVal(`cardio.${type}.notes`,"")}</textarea>`;
 }
 function readCardioData(){
- const type=document.getElementById("cardioType").value;
- if(!type||!cardioConfig[type])return null;
- const metrics={};document.querySelectorAll("[data-cardio]").forEach(i=>{if(i.value!=="")metrics[i.dataset.cardio]=+i.value});
- return{type,label:cardioConfig[type].label,metrics,notes:document.getElementById("cardioNotes")?.value||""};
+  const type=draftVal("cardio.type","");
+  if(!type||!cardioConfig[type])return null;
+  const metrics={};
+  cardioConfig[type].fields.forEach(f=>{
+    const v=draftVal(`cardio.${type}.${f.key}`,"");
+    if(v!=="")metrics[f.key]=+v;
+  });
+  return{type,label:cardioConfig[type].label,metrics,notes:draftVal(`cardio.${type}.notes`,"")};
 }
 function cardioMetricLabel(k){return({minutes:"min",distanceKm:"km",speedKmh:"km/h",inclinePct:"%",avgHr:"bpm",resistance:"nivel",avgWatts:"W",distanceM:"m",split500:"seg/500m",floors:"pisos",level:"nivel"})[k]||k}
-document.getElementById("cardioType").addEventListener("change",renderCardioFields);
 
-function cardioSessions(type){return state.sessions.filter(s=>s.type==="Gym"&&s.cardio&&s.cardio.type===type)}
-function renderCardioProgress(){
- const type=document.getElementById("cardioProgressSelect").value,arr=cardioSessions(type),stats=document.getElementById("cardioProgressStats"),svg=document.getElementById("cardioChart");
- if(!arr.length){stats.innerHTML='<div class="empty">Todav\u00eda no hay sesiones registradas de esta actividad.</div>';svg.innerHTML="";return}
- const latest=arr.at(-1),mins=arr.map(s=>+(s.cardio.metrics?.minutes||0)).filter(Boolean),dist=arr.map(s=>+(s.cardio.metrics?.distanceKm||0)).filter(Boolean),watts=arr.map(s=>+(s.cardio.metrics?.avgWatts||0)).filter(Boolean),hr=arr.map(s=>+(s.cardio.metrics?.avgHr||0)).filter(Boolean);
- stats.innerHTML=`<div class="grid3">
- <div class="kpi"><span class="sub">Sesiones</span><strong>${arr.length}</strong><span class="sub">${cardioConfig[type].label}</span></div>
- <div class="kpi"><span class="sub">\u00daltima</span><strong>${latest.cardio.metrics?.minutes||0} min</strong><span class="sub">${fmtDate(new Date(latest.date))}</span></div>
- <div class="kpi"><span class="sub">Total</span><strong>${Math.round(mins.reduce((a,b)=>a+b,0))}</strong><span class="sub">minutos</span></div>
- </div><div class="note" style="margin-top:10px">${dist.length?`Mejor distancia: <b>${Math.max(...dist)} km</b><br>`:""}${watts.length?`Mejor potencia media: <b>${Math.max(...watts)} W</b><br>`:""}${hr.length?`FC media promedio: <b>${Math.round(hr.reduce((a,b)=>a+b,0)/hr.length)} bpm</b>`:""}</div>`;
- let key="minutes",label="minutos";if(["walking","bike","elliptical","other"].includes(type)&&dist.length){key="distanceKm";label="km"}if(type==="rower"){key="distanceM";label="m"}if(type==="stairs"){key="floors";label="pisos"}
- const vals=arr.slice(-10).map(s=>+(s.cardio.metrics?.[key]||0)),max=Math.max(...vals,1),pts=vals.map((v,i)=>[15+i*(310/Math.max(vals.length-1,1)),115-(v/max)*90]);
- svg.innerHTML='<line class="axis" x1="10" y1="115" x2="330" y2="115"/>'+`<polyline class="line" points="${pts.map(p=>p.join(",")).join(" ")}"/>`+pts.map((p,i)=>`<circle class="dot" cx="${p[0]}" cy="${p[1]}" r="4"/><text x="${p[0]-7}" y="130">${i+1}</text>`).join("")+`<text x="12" y="14">${label}</text>`;
+document.addEventListener("input",handleDraftEvent,true);
+document.addEventListener("change",handleDraftEvent,true);
+function handleDraftEvent(e){
+  const el=e.target,key=el?.dataset?.draftKey;
+  if(!key)return;
+  const value=el.type==="checkbox"?el.checked:el.value;
+  setDraftField(key,value,true);
+  if(key==="cardio.type")renderCardioFields();
+  if(key.includes(".done"))updateProgress();
 }
-document.getElementById("cardioProgressSelect").addEventListener("change",renderCardioProgress);
 
-function saveGym(){
- const ex=[];document.querySelectorAll("#gymExercises [data-exercise]").forEach((card,i)=>{const e=gymRoutine[currentDay][i],sets=[];card.querySelectorAll(".setrow").forEach((r,j)=>{const wi=r.querySelector("[data-weight]"),vi=r.querySelector("[data-value]"),di=r.querySelector("[data-done]"),weight=wi?wi.value:"",value=vi.value,done=di.checked;if(e.weighted&&weight!==""){state.lastWeights[e.name]=state.lastWeights[e.name]||{};state.lastWeights[e.name][j]=weight}sets.push({weight,value,done})});ex.push({name:e.name,sets})});
- state.sessions.push({id:Date.now(),date:new Date().toISOString(),type:"Gym",day:currentDay,feeling:gymFeeling,rpe:+document.getElementById("gymRpe").value||null,pain:+document.getElementById("gymPain").value||0,notes:document.getElementById("gymNotes").value,aerobic:document.getElementById("aerobic").checked,cardio:readCardioData(),durationSec:timerSeconds,exercises:ex});
- saveState();renderStats();renderHistory();toast("Entrenamiento guardado \u2713");renderGym();
+document.querySelectorAll("#gymFeelings button").forEach(b=>b.onclick=()=>{
+  setDraftField("gym.feeling",b.dataset.feel,true);
+  document.querySelectorAll("#gymFeelings button").forEach(x=>x.classList.toggle("active",x===b));
+});
+document.querySelectorAll("#mobFeelings button").forEach(b=>b.onclick=()=>{
+  setDraftField("mob.feeling",b.dataset.feel,true);
+  document.querySelectorAll("#mobFeelings button").forEach(x=>x.classList.toggle("active",x===b));
+});
+
+function hasGymData(day){
+  const prefix=`gym.d${day}.`;
+  if(Object.entries(draft.fields).some(([k,v])=>k.startsWith(prefix)&&fieldHasValue(v)))return true;
+  if(day===currentDay){
+    return ["gym.rpe","gym.pain","gym.notes","gym.aerobic","gym.feeling","cardio.type"].some(k=>fieldHasValue(draftVal(k,"")));
+  }
+  return false;
 }
-function saveMobility(){
- const ex=[...document.querySelectorAll("[data-mob]")].map((x,i)=>({name:mobilityRoutine[i].name,done:x.checked}));
- state.sessions.push({id:Date.now(),date:new Date().toISOString(),type:"Movilidad",feeling:mobFeeling,pain:+document.getElementById("mobPain").value||0,notes:document.getElementById("mobNotes").value,exercises:ex});
- saveState();renderStats();renderHistory();renderMobGoal();toast("Movilidad guardada \u2713");
+function buildGymSession(day,workoutId,durationSec){
+  const exercises=gymRoutine[day].map((e,i)=>{
+    const sets=e.sets.map((target,j)=>{
+      const prefix=`gym.d${day}.e${i}.s${j}`;
+      const weight=draftVal(prefix+".weight","");
+      const value=draftVal(prefix+".value",target);
+      const done=draftVal(prefix+".done",false)===true;
+      if(done&&e.weighted&&weight!==""){
+        state.lastWeights[e.name]=state.lastWeights[e.name]||{};
+        state.lastWeights[e.name][j]=weight;
+      }
+      return{weight,value,done};
+    });
+    return{name:e.name,sets};
+  });
+  return{
+    id:Date.now()+day,workoutId,date:new Date().toISOString(),startedAt:draft.startedAt?new Date(draft.startedAt).toISOString():null,
+    type:"Gym",day,feeling:draftVal("gym.feeling",""),rpe:+draftVal("gym.rpe",0)||null,pain:+draftVal("gym.pain",0)||0,
+    notes:draftVal("gym.notes",""),aerobic:draftVal("gym.aerobic",false)===true,cardio:readCardioData(),durationSec,exercises
+  };
 }
-document.getElementById("saveGym").onclick=saveGym;document.getElementById("saveMob").onclick=saveMobility;
+function hasMobilityData(){
+  return Object.entries(draft.fields).some(([k,v])=>k.startsWith("mob.")&&fieldHasValue(v));
+}
+function buildMobilitySession(workoutId,durationSec){
+  const exercises=mobilityRoutine.map((e,i)=>({name:e.name,done:draftVal(`mob.e${i}.done`,false)===true}));
+  return{
+    id:Date.now()+99,workoutId,date:new Date().toISOString(),startedAt:draft.startedAt?new Date(draft.startedAt).toISOString():null,
+    type:"Movilidad",feeling:draftVal("mob.feeling",""),pain:+draftVal("mob.pain",0)||0,notes:draftVal("mob.notes",""),
+    durationSec,exercises
+  };
+}
+
+function finalizeWorkout(){
+  // Everything is already autosaved. This only converts the draft into history.
+  const usedDays=[1,2,3].filter(hasGymData);
+  const mobUsed=hasMobilityData();
+  if(!usedDays.length&&!mobUsed){toast("Todav\u00eda no cargaste datos");return}
+  const durationSec=draft.startedAt?Math.max(1,Math.floor((Date.now()-draft.startedAt)/1000)):0;
+  const workoutId=Date.now();
+  let durationAssigned=false;
+  usedDays.forEach(day=>{
+    const d=durationAssigned?0:durationSec;
+    state.sessions.push(buildGymSession(day,workoutId,d));
+    durationAssigned=true;
+  });
+  if(mobUsed){
+    const d=durationAssigned?0:durationSec;
+    state.sessions.push(buildMobilitySession(workoutId,d));
+    durationAssigned=true;
+  }
+  saveState();
+  clearDraft();
+  renderAll();
+  toast("Entrenamiento finalizado y guardado \u2713");
+}
+
+document.getElementById("finishWorkout").onclick=finalizeWorkout;
+document.getElementById("discardDraft").onclick=()=>{
+  if(!draft.startedAt && !Object.keys(draft.fields).length){toast("No hay borrador activo");return}
+  if(!confirm("\u00bfDescartar todo lo cargado en este entrenamiento?"))return;
+  clearDraft();renderAll();toast("Borrador descartado");
+};
 
 function sessionVolume(s){if(s.type!=="Gym")return 0;let v=0;(s.exercises||[]).forEach(e=>(e.sets||[]).forEach(x=>{if(x.done&&x.weight)v+=(+x.weight||0)*(+x.value||0)}));return v}
 function renderStats(){
- const now=new Date(),ws=startOfWeek(now),week=state.sessions.filter(s=>new Date(s.date)>=ws),month=state.sessions.filter(s=>sameMonth(new Date(s.date),now));
- document.getElementById("weekCount").textContent=week.length;document.getElementById("monthCount").textContent=month.length;document.getElementById("monthVolume").textContent=Math.round(month.reduce((a,s)=>a+sessionVolume(s),0)).toLocaleString("es-AR");
- const dates=[...new Set(state.sessions.map(s=>s.date.slice(0,10)))],today=new Date();today.setHours(0,0,0,0);let streak=0;for(let i=0;i<365;i++){const k=today.toISOString().slice(0,10);if(dates.includes(k))streak++;else if(i>0)break;today.setDate(today.getDate()-1)}document.getElementById("streak").textContent=streak;renderMobGoal();
+  const now=new Date(),ws=startOfWeek(now),week=state.sessions.filter(s=>new Date(s.date)>=ws),month=state.sessions.filter(s=>sameMonth(new Date(s.date),now));
+  document.getElementById("weekCount").textContent=week.length;
+  document.getElementById("monthCount").textContent=month.length;
+  document.getElementById("monthVolume").textContent=Math.round(month.reduce((a,s)=>a+sessionVolume(s),0)).toLocaleString("es-AR");
+  const dates=[...new Set(state.sessions.map(s=>s.date.slice(0,10)))],today=new Date();today.setHours(0,0,0,0);let streak=0;
+  for(let i=0;i<365;i++){const k=today.toISOString().slice(0,10);if(dates.includes(k))streak++;else if(i>0)break;today.setDate(today.getDate()-1)}
+  document.getElementById("streak").textContent=streak;renderMobGoal();
 }
-function renderMobGoal(){const ws=startOfWeek(new Date()),mob=state.sessions.filter(s=>s.type==="Movilidad"&&new Date(s.date)>=ws).length,p=Math.min(100,Math.round(mob/3*100));document.getElementById("mobWeeklyProgress").style.width=p+"%";document.getElementById("mobGoalText").textContent=`${mob}/3 sesiones m\u00ednimas esta semana${mob>=3?" \u2713":""}`}
+function renderMobGoal(){
+  const ws=startOfWeek(new Date()),mob=state.sessions.filter(s=>s.type==="Movilidad"&&new Date(s.date)>=ws).length,p=Math.min(100,Math.round(mob/3*100));
+  document.getElementById("mobWeeklyProgress").style.width=p+"%";
+  document.getElementById("mobGoalText").textContent=`${mob}/3 sesiones m\u00ednimas esta semana${mob>=3?" \u2713":""}`;
+}
+
+function cardioSessions(type){return state.sessions.filter(s=>s.type==="Gym"&&s.cardio&&s.cardio.type===type)}
+function renderCardioProgress(){
+  const type=document.getElementById("cardioProgressSelect").value,arr=cardioSessions(type),stats=document.getElementById("cardioProgressStats"),svg=document.getElementById("cardioChart");
+  if(!arr.length){stats.innerHTML='<div class="empty">Todav\u00eda no hay sesiones registradas de esta actividad.</div>';svg.innerHTML="";return}
+  const latest=arr.at(-1),mins=arr.map(s=>+(s.cardio.metrics?.minutes||0)).filter(Boolean),dist=arr.map(s=>+(s.cardio.metrics?.distanceKm||0)).filter(Boolean),watts=arr.map(s=>+(s.cardio.metrics?.avgWatts||0)).filter(Boolean),hr=arr.map(s=>+(s.cardio.metrics?.avgHr||0)).filter(Boolean);
+  stats.innerHTML=`<div class="grid3">
+   <div class="kpi"><span class="sub">Sesiones</span><strong>${arr.length}</strong><span class="sub">${cardioConfig[type].label}</span></div>
+   <div class="kpi"><span class="sub">\u00daltima</span><strong>${latest.cardio.metrics?.minutes||0} min</strong><span class="sub">${fmtDate(new Date(latest.date))}</span></div>
+   <div class="kpi"><span class="sub">Total</span><strong>${Math.round(mins.reduce((a,b)=>a+b,0))}</strong><span class="sub">minutos</span></div>
+   </div><div class="note" style="margin-top:10px">${dist.length?`Mejor distancia: <b>${Math.max(...dist)} km</b><br>`:""}${watts.length?`Mejor potencia media: <b>${Math.max(...watts)} W</b><br>`:""}${hr.length?`FC media promedio: <b>${Math.round(hr.reduce((a,b)=>a+b,0)/hr.length)} bpm</b>`:""}</div>`;
+  let key="minutes",label="minutos";if(["walking","bike","elliptical","other"].includes(type)&&dist.length){key="distanceKm";label="km"}if(type==="rower"){key="distanceM";label="m"}if(type==="stairs"){key="floors";label="pisos"}
+  const vals=arr.slice(-10).map(s=>+(s.cardio.metrics?.[key]||0)),max=Math.max(...vals,1),pts=vals.map((v,i)=>[15+i*(310/Math.max(vals.length-1,1)),115-(v/max)*90]);
+  svg.innerHTML='<line class="axis" x1="10" y1="115" x2="330" y2="115"/>'+`<polyline class="line" points="${pts.map(p=>p.join(",")).join(" ")}"/>`+pts.map((p,i)=>`<circle class="dot" cx="${p[0]}" cy="${p[1]}" r="4"/><text x="${p[0]-7}" y="130">${i+1}</text>`).join("")+`<text x="12" y="14">${label}</text>`;
+}
+document.getElementById("cardioProgressSelect").addEventListener("change",renderCardioProgress);
 
 function renderProgress(){
- const now=new Date(),ws=startOfWeek(now),week=state.sessions.filter(s=>new Date(s.date)>=ws),month=state.sessions.filter(s=>sameMonth(new Date(s.date),now));
- document.getElementById("gymWeek").textContent=week.filter(s=>s.type==="Gym").length+"/3";document.getElementById("mobWeek").textContent=week.filter(s=>s.type==="Movilidad").length+"/3";document.getElementById("monthMinutes").textContent=Math.round(month.reduce((a,s)=>a+(s.durationSec||0),0)/60);
- const gym=state.sessions.filter(s=>s.type==="Gym").slice(-10),vals=gym.map(sessionVolume),svg=document.getElementById("volumeChart");
- if(!vals.length){svg.innerHTML='<text x="12" y="70">Todav\u00eda no hay datos de volumen.</text>'}else{const max=Math.max(...vals,1),pts=vals.map((v,i)=>[15+i*(310/Math.max(vals.length-1,1)),115-(v/max)*90]);svg.innerHTML='<line class="axis" x1="10" y1="115" x2="330" y2="115"/>'+`<polyline class="line" points="${pts.map(p=>p.join(",")).join(" ")}"/>`+pts.map((p,i)=>`<circle class="dot" cx="${p[0]}" cy="${p[1]}" r="4"/><text x="${p[0]-7}" y="130">${i+1}</text>`).join("")}
- renderExerciseStats();renderCardioProgress();const total=week.length,gymN=week.filter(s=>s.type==="Gym").length,mobN=week.filter(s=>s.type==="Movilidad").length;document.getElementById("adherenceSummary").innerHTML=`Esta semana registraste <b>${total}</b> sesiones: <b>${gymN}</b> de gym y <b>${mobN}</b> de movilidad. Objetivo sugerido por la rutina: 3 d\u00edas de gym y al menos 3 sesiones de movilidad.`;
+  const now=new Date(),ws=startOfWeek(now),week=state.sessions.filter(s=>new Date(s.date)>=ws),month=state.sessions.filter(s=>sameMonth(new Date(s.date),now));
+  document.getElementById("gymWeek").textContent=week.filter(s=>s.type==="Gym").length+"/3";
+  document.getElementById("mobWeek").textContent=week.filter(s=>s.type==="Movilidad").length+"/3";
+  document.getElementById("monthMinutes").textContent=Math.round(month.reduce((a,s)=>a+(s.durationSec||0),0)/60);
+  const gym=state.sessions.filter(s=>s.type==="Gym").slice(-10),vals=gym.map(sessionVolume),svg=document.getElementById("volumeChart");
+  if(!vals.length)svg.innerHTML='<text x="12" y="70">Todav\u00eda no hay datos de volumen.</text>';
+  else{
+    const max=Math.max(...vals,1),pts=vals.map((v,i)=>[15+i*(310/Math.max(vals.length-1,1)),115-(v/max)*90]);
+    svg.innerHTML='<line class="axis" x1="10" y1="115" x2="330" y2="115"/>'+`<polyline class="line" points="${pts.map(p=>p.join(",")).join(" ")}"/>`+pts.map((p,i)=>`<circle class="dot" cx="${p[0]}" cy="${p[1]}" r="4"/><text x="${p[0]-7}" y="130">${i+1}</text>`).join("");
+  }
+  renderExerciseStats();renderCardioProgress();
+  const total=week.length,gymN=week.filter(s=>s.type==="Gym").length,mobN=week.filter(s=>s.type==="Movilidad").length;
+  document.getElementById("adherenceSummary").innerHTML=`Esta semana registraste <b>${total}</b> sesiones: <b>${gymN}</b> de gym y <b>${mobN}</b> de movilidad. Objetivo sugerido por la rutina: 3 d\u00edas de gym y al menos 3 sesiones de movilidad.`;
 }
-function fillExerciseSelect(){const names=[...new Set(Object.values(gymRoutine).flat().filter(e=>e.weighted).map(e=>e.name))];document.getElementById("exerciseSelect").innerHTML=names.map(n=>`<option>${n}</option>`).join("");document.getElementById("exerciseSelect").onchange=renderExerciseStats}
-function renderExerciseStats(){const sel=document.getElementById("exerciseSelect"),name=sel.value;if(!name)return;const hist=[];state.sessions.filter(s=>s.type==="Gym").forEach(s=>{const e=s.exercises?.find(x=>x.name===name);if(e){const done=e.sets?.filter(x=>x.done&&x.weight)||[];if(done.length)hist.push({date:s.date,max:Math.max(...done.map(x=>+x.weight||0)),volume:done.reduce((a,x)=>a+(+x.weight||0)*(+x.value||0),0)})}});const box=document.getElementById("exerciseStats");if(!hist.length){box.innerHTML='<div class="empty">Todav\u00eda no hay registros con peso para este ejercicio.</div>';return}const last=hist.at(-1),best=Math.max(...hist.map(x=>x.max));box.innerHTML=`<div class="grid3"><div class="kpi"><span class="sub">\u00daltimo peso</span><strong>${last.max} kg</strong><span class="sub">${fmtDate(new Date(last.date))}</span></div><div class="kpi"><span class="sub">Mejor peso</span><strong>${best} kg</strong><span class="sub">registrado</span></div><div class="kpi"><span class="sub">\u00dalt. volumen</span><strong>${Math.round(last.volume)}</strong><span class="sub">kg\u00b7reps</span></div></div>`}
+function fillExerciseSelect(){
+  const names=[...new Set(Object.values(gymRoutine).flat().filter(e=>e.weighted).map(e=>e.name))];
+  document.getElementById("exerciseSelect").innerHTML=names.map(n=>`<option>${n}</option>`).join("");
+  document.getElementById("exerciseSelect").onchange=renderExerciseStats;
+}
+function renderExerciseStats(){
+  const name=document.getElementById("exerciseSelect").value;if(!name)return;
+  const hist=[];
+  state.sessions.filter(s=>s.type==="Gym").forEach(s=>{
+    const e=s.exercises?.find(x=>x.name===name);
+    if(e){const done=e.sets?.filter(x=>x.done&&x.weight)||[];if(done.length)hist.push({date:s.date,max:Math.max(...done.map(x=>+x.weight||0)),volume:done.reduce((a,x)=>a+(+x.weight||0)*(+x.value||0),0)})}
+  });
+  const box=document.getElementById("exerciseStats");
+  if(!hist.length){box.innerHTML='<div class="empty">Todav\u00eda no hay registros con peso para este ejercicio.</div>';return}
+  const last=hist.at(-1),best=Math.max(...hist.map(x=>x.max));
+  box.innerHTML=`<div class="grid3"><div class="kpi"><span class="sub">\u00daltimo peso</span><strong>${last.max} kg</strong><span class="sub">${fmtDate(new Date(last.date))}</span></div><div class="kpi"><span class="sub">Mejor peso</span><strong>${best} kg</strong><span class="sub">registrado</span></div><div class="kpi"><span class="sub">\u00dalt. volumen</span><strong>${Math.round(last.volume)}</strong><span class="sub">kg\u00b7reps</span></div></div>`;
+}
 
 function sessionSummary(s){
- const lines=[`SLRP Training \u2014 ${s.type}${s.day?" \u00b7 D\u00eda "+s.day:""}`,new Date(s.date).toLocaleString("es-AR")];
- if(s.type==="Gym"){let d=0,t=0;(s.exercises||[]).forEach(e=>(e.sets||[]).forEach(x=>{t++;if(x.done)d++}));lines.push(`Series completadas: ${d}/${t}`);if(s.durationSec)lines.push(`Duraci\u00f3n: ${Math.round(s.durationSec/60)} min`);lines.push(`Aer\u00f3bico: ${s.aerobic?"S\u00ed":"No"}`);if(s.cardio){lines.push(`Cardio: ${s.cardio.label}`);const m=s.cardio.metrics||{};Object.keys(m).forEach(k=>lines.push(`  ${k}: ${m[k]} ${cardioMetricLabel(k)}`));if(s.cardio.notes)lines.push(`  Nota cardio: ${s.cardio.notes}`)}lines.push(`Volumen: ${Math.round(sessionVolume(s))} kg\u00b7reps`);(s.exercises||[]).forEach(e=>{const v=(e.sets||[]).filter(x=>x.done).map(x=>(x.weight?x.weight+" kg \u00d7 ":"")+x.value);if(v.length)lines.push(`${e.name}: ${v.join(" \u00b7 ")}`)})}else{const d=(s.exercises||[]).filter(x=>x.done).length;lines.push(`Ejercicios completados: ${d}/${s.exercises?.length||0}`)}
- if(s.feeling)lines.push(`Sensaci\u00f3n: ${s.feeling}`);if(s.rpe)lines.push(`RPE: ${s.rpe}/10`);if(s.pain!=null)lines.push(`Molestia/dolor: ${s.pain}/10`);if(s.notes)lines.push(`Notas: ${s.notes}`);return lines.join("\n")
+  const lines=[`SLRP Training \u2014 ${s.type}${s.day?" \u00b7 D\u00eda "+s.day:""}`,new Date(s.date).toLocaleString("es-AR")];
+  if(s.durationSec)lines.push(`Duraci\u00f3n total del entrenamiento: ${Math.round(s.durationSec/60)} min`);
+  if(s.type==="Gym"){
+    let d=0,t=0;(s.exercises||[]).forEach(e=>(e.sets||[]).forEach(x=>{t++;if(x.done)d++}));
+    lines.push(`Series completadas: ${d}/${t}`);
+    lines.push(`Aer\u00f3bico: ${s.aerobic?"S\u00ed":"No"}`);
+    if(s.cardio){
+      lines.push(`Cardio: ${s.cardio.label}`);
+      const m=s.cardio.metrics||{};
+      Object.keys(m).forEach(k=>lines.push(`  ${k}: ${m[k]} ${cardioMetricLabel(k)}`));
+      if(s.cardio.notes)lines.push(`  Nota cardio: ${s.cardio.notes}`);
+    }
+    lines.push(`Volumen: ${Math.round(sessionVolume(s))} kg\u00b7reps`);
+    (s.exercises||[]).forEach(e=>{
+      const v=(e.sets||[]).filter(x=>x.done).map(x=>(x.weight?x.weight+" kg \u00d7 ":"")+x.value);
+      if(v.length)lines.push(`${e.name}: ${v.join(" \u00b7 ")}`);
+    });
+  }else{
+    const d=(s.exercises||[]).filter(x=>x.done).length;
+    lines.push(`Ejercicios completados: ${d}/${s.exercises?.length||0}`);
+  }
+  if(s.feeling)lines.push(`Sensaci\u00f3n: ${s.feeling}`);
+  if(s.rpe)lines.push(`RPE: ${s.rpe}/10`);
+  if(s.pain!=null)lines.push(`Molestia/dolor: ${s.pain}/10`);
+  if(s.notes)lines.push(`Notas: ${s.notes}`);
+  return lines.join("\n");
 }
-function periodSummary(kind){const now=new Date(),arr=kind==="week"?state.sessions.filter(s=>new Date(s.date)>=startOfWeek(now)):state.sessions.filter(s=>sameMonth(new Date(s.date),now)),gym=arr.filter(s=>s.type==="Gym"),mob=arr.filter(s=>s.type==="Movilidad");const lines=[`SLRP Training \u2014 Resumen ${kind==="week"?"semanal":"mensual"}`,`Sesiones: ${arr.length} \u00b7 Gym ${gym.length} \u00b7 Movilidad ${mob.length}`,`Tiempo gym: ${Math.round(gym.reduce((a,s)=>a+(s.durationSec||0),0)/60)} min`,`Volumen: ${Math.round(gym.reduce((a,s)=>a+sessionVolume(s),0))} kg\u00b7reps`];[1,2,3].forEach(d=>{const n=gym.filter(s=>s.day===d).length;if(n)lines.push(`D\u00eda ${d}: ${n} sesi\u00f3n${n===1?"":"es"}`)});return lines.join("\n")}
-function renderHistory(){const c=document.getElementById("historyList");if(!state.sessions.length){c.innerHTML='<div class="empty">Todav\u00eda no hay sesiones guardadas.</div>';return}c.innerHTML=state.sessions.slice().reverse().map(s=>`<div class="history-item"><div class="row between"><div><strong>${s.type}${s.day?" \u00b7 D\u00eda "+s.day:""}</strong><div class="sub">${new Date(s.date).toLocaleString("es-AR")}</div></div><span class="badge2">${s.type==="Gym"?Math.round(sessionVolume(s))+" kg\u00b7reps":"movilidad"}</span></div><div class="note" style="white-space:pre-wrap">${sessionSummary(s).split("\n").slice(2).join("\n")}</div><div class="row" style="margin-top:8px"><button class="mini" onclick="shareSession(${s.id})">WhatsApp</button><button class="mini" onclick="deleteSession(${s.id})">Eliminar</button></div></div>`).join("")}
-function deleteSession(id){if(!confirm("\u00bfEliminar esta sesi\u00f3n?"))return;state.sessions=state.sessions.filter(s=>s.id!==id);saveState();renderStats();renderHistory();toast("Sesi\u00f3n eliminada")}
+function workoutSummary(records){
+  if(!records.length)return "";
+  if(records.length===1)return sessionSummary(records[0]);
+  const duration=records.reduce((a,s)=>a+(s.durationSec||0),0);
+  return [`SLRP Training \u2014 Entrenamiento completo`,new Date(records[0].date).toLocaleString("es-AR"),duration?`Duraci\u00f3n total: ${Math.round(duration/60)} min`:"",...records.map(s=>"\n"+sessionSummary(s).split("\n").slice(2).join("\n"))].filter(Boolean).join("\n");
+}
+function lastWorkoutRecords(){
+  const last=state.sessions.at(-1);if(!last)return [];
+  if(!last.workoutId)return [last];
+  return state.sessions.filter(s=>s.workoutId===last.workoutId);
+}
+function periodSummary(kind){
+  const now=new Date(),arr=kind==="week"?state.sessions.filter(s=>new Date(s.date)>=startOfWeek(now)):state.sessions.filter(s=>sameMonth(new Date(s.date),now)),gym=arr.filter(s=>s.type==="Gym"),mob=arr.filter(s=>s.type==="Movilidad");
+  const lines=[`SLRP Training \u2014 Resumen ${kind==="week"?"semanal":"mensual"}`,`Sesiones: ${arr.length} \u00b7 Gym ${gym.length} \u00b7 Movilidad ${mob.length}`,`Tiempo total registrado: ${Math.round(arr.reduce((a,s)=>a+(s.durationSec||0),0)/60)} min`,`Volumen: ${Math.round(gym.reduce((a,s)=>a+sessionVolume(s),0))} kg\u00b7reps`];
+  [1,2,3].forEach(d=>{const n=gym.filter(s=>s.day===d).length;if(n)lines.push(`D\u00eda ${d}: ${n} sesi\u00f3n${n===1?"":"es"}`)});
+  return lines.join("\n");
+}
+function renderHistory(){
+  const c=document.getElementById("historyList");
+  if(!state.sessions.length){c.innerHTML='<div class="empty">Todav\u00eda no hay sesiones guardadas.</div>';return}
+  c.innerHTML=state.sessions.slice().reverse().map(s=>`<div class="history-item"><div class="row between"><div><strong>${s.type}${s.day?" \u00b7 D\u00eda "+s.day:""}</strong><div class="sub">${new Date(s.date).toLocaleString("es-AR")}</div></div><span class="badge2">${s.type==="Gym"?Math.round(sessionVolume(s))+" kg\u00b7reps":"movilidad"}</span></div><div class="note" style="white-space:pre-wrap">${sessionSummary(s).split("\n").slice(2).join("\n")}</div><div class="row" style="margin-top:8px"><button class="mini" onclick="shareSession(${s.id})">WhatsApp</button><button class="mini" onclick="deleteSession(${s.id})">Eliminar</button></div></div>`).join("");
+}
+function deleteSession(id){
+  if(!confirm("\u00bfEliminar esta sesi\u00f3n?"))return;
+  state.sessions=state.sessions.filter(s=>s.id!==id);saveState();renderStats();renderHistory();toast("Sesi\u00f3n eliminada");
+}
 function wa(text){document.getElementById("sharePreview").value=text;window.open("https://wa.me/?text="+encodeURIComponent(text),"_blank")}
 function shareSession(id){const s=state.sessions.find(x=>x.id===id);if(s)wa(sessionSummary(s))}
-document.getElementById("shareLast").onclick=()=>{const s=state.sessions.at(-1);if(!s)return toast("No hay sesiones");wa(sessionSummary(s))};document.getElementById("shareWeek").onclick=()=>wa(periodSummary("week"));document.getElementById("shareMonth").onclick=()=>wa(periodSummary("month"));document.getElementById("shareAll").onclick=()=>{const s=state.sessions.at(-1);wa((s?sessionSummary(s)+"\n\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\n":"")+periodSummary("week")+"\n\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\n"+periodSummary("month"))};document.getElementById("quickShare").onclick=()=>{const s=state.sessions.at(-1);if(!s)return toast("Guard\u00e1 una sesi\u00f3n primero");wa(sessionSummary(s))};
+document.getElementById("shareLast").onclick=()=>{const r=lastWorkoutRecords();if(!r.length)return toast("No hay sesiones");wa(workoutSummary(r))};
+document.getElementById("shareWeek").onclick=()=>wa(periodSummary("week"));
+document.getElementById("shareMonth").onclick=()=>wa(periodSummary("month"));
+document.getElementById("shareAll").onclick=()=>{const r=lastWorkoutRecords();wa((r.length?workoutSummary(r)+"\n\n--------\n\n":"")+periodSummary("week")+"\n\n--------\n\n"+periodSummary("month"))};
+document.getElementById("quickShare").onclick=()=>{const r=lastWorkoutRecords();if(!r.length)return toast("Guard\u00e1 una sesi\u00f3n primero");wa(workoutSummary(r))};
 
-document.getElementById("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="SLRP-Training-Backup.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+document.getElementById("exportBtn").onclick=()=>{
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);a.download="SLRP-Training-Backup.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
 
-renderGym();renderMobility();renderCardioFields();fillExerciseSelect();renderStats();renderHistory();saveState();
+function renderAll(){
+  currentDay=Number(draft.currentDay||1);
+  syncDayButtons();
+  restoreStaticDraft();
+  renderGym();
+  renderMobility();
+  renderCardioFields();
+  renderStats();
+  renderHistory();
+  renderTimer();
+  updateDraftStatus();
+}
+fillExerciseSelect();
+renderAll();
+timerInterval=setInterval(renderTimer,1000);
 </script>
 </body>
 </html>
